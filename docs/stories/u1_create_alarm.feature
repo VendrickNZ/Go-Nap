@@ -14,5 +14,9 @@ Feature: I want to be able to define an alarm at a location on the map So that I
   Scenario: AC3 - View alarm on map
     Given I have defined an alarm at a location
     When I view that location on the map
-    Then I can see a circle outlining the alarm with the radius equal to the alarm
-    radius
+    Then I can see a circle outlining the alarm with the radius equal to the alarm radius
+
+  Scenario: AC4 - View the alarm
+    Given I am looking at an alarm radius on the map
+    When I press anywhere in the radius
+    Then I am shown a box with the details of the alarm 
