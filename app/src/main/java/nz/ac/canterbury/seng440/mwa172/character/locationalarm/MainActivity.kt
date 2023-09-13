@@ -10,13 +10,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import nz.ac.canterbury.seng440.mwa172.character.locationalarm.ui.theme.LocationAlaramTheme
+import nz.ac.canterbury.seng440.mwa172.character.locationalarm.ui.theme.LocationAlarmTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LocationAlaramTheme {
+            LocationAlarmTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -37,7 +37,7 @@ fun Greeting(name: String) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    LocationAlaramTheme {
+    LocationAlarmTheme {
         Greeting("Android")
     }
 }
