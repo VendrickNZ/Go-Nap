@@ -1,4 +1,4 @@
-Feature: I want to be able to receive notifications when I am located in an alarm area
+Feature: As a user, I want to be able to receive notifications when I am located in an alarm area
   So that I can be woken up from a nap
 
   Given I have set an alarm

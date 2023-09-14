@@ -1,4 +1,4 @@
-Feature: I want to be able to see a map of the world around me So that I can define alarms
+Feature: As a user, I want to be able to see a map of the world around me So that I can define alarms
 
   Scenario: AC1 - View map
     Given I am on my phone's home screen
