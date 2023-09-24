@@ -42,8 +42,8 @@ class MainActivity : ComponentActivity() {
             ) {
                 Marker(
                     state = MarkerState(position = singapore),
-                    title = "Singapore",
-                    snippet = "Marker in Singapore"
+                    title = "Singapoor",
+                    snippet = "Marker in Singapoor"
                 )
             }
         }
