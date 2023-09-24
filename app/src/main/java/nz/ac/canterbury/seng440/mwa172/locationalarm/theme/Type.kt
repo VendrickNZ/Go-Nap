@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng440.mwa172.character.locationalarm.ui.theme
+package nz.ac.canterbury.seng440.mwa172.locationalarm.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
