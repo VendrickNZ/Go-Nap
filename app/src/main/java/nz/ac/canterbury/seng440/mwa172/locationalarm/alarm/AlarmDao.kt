@@ -10,12 +10,15 @@ interface AlarmDao {
     suspend fun insert(alarm: Alarm): Long
 
     @Update
-    suspend fun update(friend: Alarm)
+    suspend fun update(alarm: Alarm): Int
 
     @Delete
-    suspend fun delete(friend: Alarm)
+    suspend fun delete(alarm: Alarm): Int
 
     @Query("SELECT * FROM alarm")
     fun getAll(): Flow<List<Alarm>>
+
+    @Query("SELECT * FROM alarm WHERE alarm.id = :id")
+    fun getById(id: Long): Alarm
 
 }

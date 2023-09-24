@@ -9,10 +9,9 @@ data class Alarm(
     @ColumnInfo var name: String,
     @ColumnInfo var latitude: Double,
     @ColumnInfo var longitude: Double,
-    @ColumnInfo var radius: Double,
-    @PrimaryKey(autoGenerate = true) var id: Long = 0
+    @ColumnInfo var radius: Double
 ) {
 
-
+    @PrimaryKey(autoGenerate = true) var id: Long = 0
 
 }
