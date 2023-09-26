@@ -27,6 +27,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import nz.ac.canterbury.seng440.mwa172.locationalarm.map.AlarmMap
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 
 class MainActivity : ComponentActivity() {
@@ -37,7 +38,6 @@ class MainActivity : ComponentActivity() {
         get() = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
-    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -56,34 +56,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting("Android")
+
                 }
-            }
 
-            var location by remember { mutableStateOf(LatLng(0.0, 0.0)) }
-
-
-            val cameraPositionState = rememberCameraPositionState {
-
-            }
-
-            if (hasLocationPermissions) {
-                fusedLocationClient.lastLocation
-                    .addOnSuccessListener {
-                        location = LatLng(it.latitude, it.longitude)
-                        cameraPositionState.position = CameraPosition.fromLatLngZoom(location, 20f)
-                    }
-            }
-
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState
-            ) {
-                Marker(
-                    state = MarkerState(position = location),
-                    title = "Singapoor",
-                    snippet = "Marker in Singapoor"
-                )
+                if (hasLocationPermissions) {
+                    AlarmMap(
+                        fusedLocationClient = fusedLocationClient
+                    )
+                }
             }
         }
     }
