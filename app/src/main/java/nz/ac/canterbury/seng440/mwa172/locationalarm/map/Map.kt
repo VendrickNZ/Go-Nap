@@ -17,7 +17,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @SuppressLint("MissingPermission")
 fun AlarmMap(
     modifier: Modifier = Modifier,
-    fusedLocationClient: FusedLocationProviderClient,
     viewModel: MapViewModel
 ) {
 
@@ -34,7 +33,7 @@ fun AlarmMap(
     }
 
     GoogleMap(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState
     ) {
         Marker(

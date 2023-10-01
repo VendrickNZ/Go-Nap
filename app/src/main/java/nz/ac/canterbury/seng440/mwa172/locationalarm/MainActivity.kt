@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -20,9 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.AlarmMap
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.MapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
@@ -49,21 +54,20 @@ class MainActivity : ComponentActivity() {
         )
         requestPermissions(permissions, 100)
 
+        lifecycleScope.launch {
+            if (hasLocationPermissions) {
+                Log.d("", "has permission")
+                viewModel.liveLocation(fusedLocationClient)
+                    .collect {
+                        viewModel.setLocation(it.latitude, it.longitude)
+                        Log.d("","Setting location to ${it.latitude} and ${it.longitude}")
+                    }
+            }
+        }
 
         setContent {
+            Log.d("", "Recomposing")
             LocationAlarmTheme {
-                viewModel.location.observe(this, { location ->
-
-                })
-
-                if (hasLocationPermissions) {
-                    fetchLocation()
-                    AlarmMap(
-                        fusedLocationClient = fusedLocationClient,
-                        viewModel = viewModel
-                    )
-                }
-
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -72,49 +76,10 @@ class MainActivity : ComponentActivity() {
 
                 }
 
-                if (hasLocationPermissions) {
-                    AlarmMap(
-                        fusedLocationClient = fusedLocationClient,
-                        viewModel = viewModel
-                    )
-                }
+                AlarmMap(
+                    viewModel = viewModel
+                )
             }
         }
-    }
-
-    private fun fetchLocation() {
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            location?.let {
-                viewModel.setLocation(it.latitude, it.longitude)
-            }
-        }
-    }
-
-    private fun promptForGPS() {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            AlertDialog.Builder(this).apply {
-                setMessage("GPS is not enabled on your device. Enable it in the location settings.")
-                setPositiveButton("Settings") { _, _ ->
-                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                }
-                setNegativeButton("Cancel") { _, _ -> }
-                show()
-            }
-        }
-    }
-
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    LocationAlarmTheme {
-        Greeting("Android")
     }
 }
