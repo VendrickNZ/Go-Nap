@@ -35,8 +35,8 @@ class MapViewModel : ViewModel() {
     @SuppressLint("MissingPermission")
     fun startLocationUpdates(fusedLocationProviderClient: FusedLocationProviderClient) {
         val locationRequest = LocationRequest.create().apply {
-            interval = 1000
-            fastestInterval = 1000
+            interval = 3000
+            fastestInterval = 3000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
@@ -44,8 +44,7 @@ class MapViewModel : ViewModel() {
             override fun onLocationResult(locationResult: LocationResult?) {
                 locationResult ?: return
                 for (location in locationResult.locations){
-                    val updatedLatitude = location.latitude + (10.0 / 111139.0)
-                    setLocation(updatedLatitude, location.longitude)
+                    setLocation(location.latitude, location.longitude)
                 }
             }
         }
