@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng440.mwa172.locationalarm.map
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -29,6 +30,7 @@ fun AlarmMap(
         .observeAsState(initial = LatLng(-43.5321, 172.6362))  // Default to Christchurch, NZ
 
     LaunchedEffect(liveLocation) {
+        Log.d("", "Recomposing with new location: $liveLocation")
         cameraPositionState.position = CameraPosition.fromLatLngZoom(liveLocation, 20f)
     }
 

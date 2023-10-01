@@ -7,6 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,12 +32,32 @@ class MapViewModel : ViewModel() {
         _location.value = LatLng(lat, lng)
     }
 
+    @SuppressLint("MissingPermission")
+    fun startLocationUpdates(fusedLocationProviderClient: FusedLocationProviderClient) {
+        val locationRequest = LocationRequest.create().apply {
+            interval = 1000
+            fastestInterval = 1000
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                for (location in locationResult.locations){
+                    val updatedLatitude = location.latitude + (10.0 / 111139.0)
+                    setLocation(updatedLatitude, location.longitude)
+                }
+            }
+        }
+
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @SuppressLint("MissingPermission")
     suspend fun liveLocation(
         fusedLocationProviderClient: FusedLocationProviderClient
     ): Flow<LatLng> {
-
         return flow {
             while (true) {
                 val location: Location = suspendCancellableCoroutine { continuation ->
@@ -45,7 +68,6 @@ class MapViewModel : ViewModel() {
                             }
                         }
                 }
-
                 emit(LatLng(location.latitude, location.longitude))
                 kotlinx.coroutines.delay(1000L)
             }

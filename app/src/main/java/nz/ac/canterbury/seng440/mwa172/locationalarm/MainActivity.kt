@@ -57,16 +57,11 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             if (hasLocationPermissions) {
                 Log.d("", "has permission")
-                viewModel.liveLocation(fusedLocationClient)
-                    .collect {
-                        viewModel.setLocation(it.latitude, it.longitude)
-                        Log.d("","Setting location to ${it.latitude} and ${it.longitude}")
-                    }
+                viewModel.startLocationUpdates(fusedLocationClient)
             }
         }
 
         setContent {
-            Log.d("", "Recomposing")
             LocationAlarmTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
