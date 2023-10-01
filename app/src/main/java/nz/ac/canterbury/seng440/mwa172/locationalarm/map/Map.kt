@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
@@ -20,19 +21,17 @@ fun AlarmMap(
     viewModel: MapViewModel
 ) {
 
-    val cameraPositionState = rememberCameraPositionState {}
-//
-//    fusedLocationClient.lastLocation
-//        .addOnSuccessListener {
-//            location = LatLng(it.latitude, it.longitude)
-//            cameraPositionState.position =
-//                CameraPosition.fromLatLngZoom(location, 20f)
-//        }
+    val cameraPositionState = rememberCameraPositionState {
+        CameraPosition(LatLng(-43.5321, 172.6362), 20f, 0f, 0f)  // Default to Christchurch, NZ
+    }
 
     val liveLocation by viewModel
         .location
-        .observeAsState(initial = LatLng(0.0, 0.0))
+        .observeAsState(initial = LatLng(-43.5321, 172.6362))  // Default to Christchurch, NZ
 
+    LaunchedEffect(liveLocation) {
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(liveLocation, 20f)
+    }
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),

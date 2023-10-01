@@ -52,6 +52,18 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LocationAlarmTheme {
+                viewModel.location.observe(this, { location ->
+
+                })
+
+                if (hasLocationPermissions) {
+                    fetchLocation()
+                    AlarmMap(
+                        fusedLocationClient = fusedLocationClient,
+                        viewModel = viewModel
+                    )
+                }
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -60,13 +72,20 @@ class MainActivity : ComponentActivity() {
 
                 }
 
-
                 if (hasLocationPermissions) {
                     AlarmMap(
                         fusedLocationClient = fusedLocationClient,
                         viewModel = viewModel
                     )
                 }
+            }
+        }
+    }
+
+    private fun fetchLocation() {
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                viewModel.setLocation(it.latitude, it.longitude)
             }
         }
     }
