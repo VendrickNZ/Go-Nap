@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm.alarm
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.android.gms.maps.model.LatLng
+import org.jetbrains.annotations.Contract
 
 @Entity(tableName = "alarm")
 data class Alarm(
@@ -13,5 +15,8 @@ data class Alarm(
 ) {
 
     @PrimaryKey(autoGenerate = true) var id: Long = 0
+
+    val location: LatLng
+        get() = LatLng(latitude, longitude)
 
 }
