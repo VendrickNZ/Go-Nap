@@ -54,6 +54,7 @@ class MainActivity : ComponentActivity() {
         )
         requestPermissions(permissions, 100)
 
+        // Coroutune for location updates
         lifecycleScope.launch {
             if (hasLocationPermissions) {
                 Log.d("", "has permission")

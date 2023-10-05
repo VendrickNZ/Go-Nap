@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng440.mwa172.locationalarm.map
 
 import android.annotation.SuppressLint
+import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Icon
@@ -13,6 +14,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 
+private object Constants {
+    val DefaultLocation: () -> LatLng = {
+        LatLng(-43.5321, 172.6362)
+    }
+}
+
 @Composable
 @SuppressLint("MissingPermission")
 fun AlarmMap(
@@ -24,13 +31,15 @@ fun AlarmMap(
         CameraPosition(LatLng(-43.5321, 172.6362), 20f, 0f, 0f)  // Default to Christchurch, NZ
     }
 
-    val liveLocation: LatLng by viewModel
+    val liveLocation: Location? by viewModel
         .location
-        .observeAsState(initial = LatLng(-43.5321, 172.6362))  // Default to Christchurch, NZ
+        .observeAsState(initial = null)  // Default to Christchurch, NZ
+
+    val position: LatLng = liveLocation.asLatLng()
 
     LaunchedEffect(liveLocation) {
         Log.d("", "Recomposing with new location: $liveLocation")
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(liveLocation, 20f)
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(position, 20f)
     }
 
     GoogleMap(
@@ -38,7 +47,7 @@ fun AlarmMap(
         cameraPositionState = cameraPositionState
     ) {
         MarkerComposable(
-            state = MarkerState(position = liveLocation)
+            state = MarkerState(position = position)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.crosshair),

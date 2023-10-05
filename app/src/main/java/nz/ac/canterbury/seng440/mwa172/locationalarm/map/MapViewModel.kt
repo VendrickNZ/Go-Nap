@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm.map
 
 import android.annotation.SuppressLint
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,25 +10,29 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.processNextEventInCurrentThread
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.jetbrains.annotations.Contract
 
 class MapViewModel : ViewModel() {
 
-    private var _location: MutableLiveData<LatLng> = MutableLiveData(
-        LatLng(-43.5321, 172.6362)  // Default to Christchurch, NZ
-    )
+    private var _location: MutableLiveData<Location> = MutableLiveData()
 
-    val location: LiveData<LatLng>
+
+    val location: LiveData<Location>
         get() = _location
+    companion object {
+        const val MIN_DISTANCE_FOR_UPDATE: Float = 10f
+    }
 
-    fun setLocation(lat: Double, lng: Double) {
-        _location.value = LatLng(lat, lng)
+    fun updateLocation(location: Location) {
+        if (_location.value !== null && _location.value!!.distanceTo(location) <= MIN_DISTANCE_FOR_UPDATE) {
+            return;
+        }
+        _location.value = location
     }
 
     @SuppressLint("MissingPermission")
@@ -41,10 +44,9 @@ class MapViewModel : ViewModel() {
         }
 
         val locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult?) {
-                locationResult ?: return
+            override fun onLocationResult(locationResult: LocationResult) {
                 for (location in locationResult.locations){
-                    setLocation(location.latitude, location.longitude)
+                    updateLocation(location)
                 }
             }
         }
@@ -72,5 +74,13 @@ class MapViewModel : ViewModel() {
             }
         }
     }
+}
 
+@Contract("->new")
+fun Location?.asLatLng(): LatLng {
+    return if (this === null) {
+        LatLng(0.0, 0.0)
+    } else {
+        LatLng(this.latitude, this.longitude)
+    }
 }
