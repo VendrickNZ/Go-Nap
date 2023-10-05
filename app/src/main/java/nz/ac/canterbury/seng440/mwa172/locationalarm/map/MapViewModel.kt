@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm.map
 
 import android.annotation.SuppressLint
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -24,6 +25,7 @@ class MapViewModel : ViewModel() {
 
     val location: LiveData<Location>
         get() = _location
+
     companion object {
         const val MIN_DISTANCE_FOR_UPDATE: Float = 10f
     }
@@ -43,36 +45,16 @@ class MapViewModel : ViewModel() {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
-        val locationCallback = object : LocationCallback() {
+        val locationCallback: LocationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                for (location in locationResult.locations){
-                    updateLocation(location)
-                }
+                updateLocation(
+                    locationResult.locations
+                        .last()
+                )
             }
         }
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @SuppressLint("MissingPermission")
-    suspend fun liveLocation(
-        fusedLocationProviderClient: FusedLocationProviderClient
-    ): Flow<LatLng> {
-        return flow {
-            while (true) {
-                val location: Location = suspendCancellableCoroutine { continuation ->
-                    fusedLocationProviderClient.lastLocation
-                        .addOnSuccessListener { location ->
-                            continuation.resume(location) {
-                                throw it
-                            }
-                        }
-                }
-                emit(LatLng(location.latitude, location.longitude))
-                kotlinx.coroutines.delay(1000L)
-            }
-        }
     }
 }
 
