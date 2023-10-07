@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import nz.ac.canterbury.seng440.mwa172.locationalarm.R
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmHandler
 
 private object Constants {
     val DefaultLocation: () -> LatLng = {
@@ -44,7 +45,8 @@ fun AlarmMap(
 
     GoogleMap(
         modifier = modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState
+        cameraPositionState = cameraPositionState,
+        onMapClick = AlarmHandler
     ) {
         MarkerComposable(
             state = MarkerState(position = position)
