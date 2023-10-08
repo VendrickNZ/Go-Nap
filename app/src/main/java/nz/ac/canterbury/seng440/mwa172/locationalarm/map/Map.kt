@@ -3,21 +3,21 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm.map
 import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 
 @Composable
 @SuppressLint("MissingPermission")
@@ -51,8 +51,8 @@ fun AlarmMap(
         MarkerComposable(
             state = MarkerState(position = position)
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.crosshair),
+            Image(
+                imageVector = Icons.Filled.PersonPin,
                 contentDescription = ""
             )
         }
