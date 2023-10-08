@@ -10,43 +10,47 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.processNextEventInCurrentThread
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.jetbrains.annotations.Contract
 
 class MapViewModel : ViewModel() {
 
     private var _location: MutableLiveData<Location> = MutableLiveData()
 
-
     val location: LiveData<Location>
         get() = _location
 
     companion object {
-        const val MIN_DISTANCE_FOR_UPDATE: Float = 10f
+        const val MinDistanceForUpdate: Float = 10f
+        private const val Tag: String = "MapViewModel"
     }
 
     fun updateLocation(location: Location) {
-        if (_location.value !== null && _location.value!!.distanceTo(location) <= MIN_DISTANCE_FOR_UPDATE) {
-            return;
+
+        _location.value?.let {
+            if (it.distanceTo(location) <= MinDistanceForUpdate) {
+                Log.d(Tag, "User has not moved sufficiently to update crosshair")
+                return
+            }
         }
+
+        Log.d(Tag, "Updating location in view model")
         _location.value = location
+
     }
 
     @SuppressLint("MissingPermission")
     fun startLocationUpdates(fusedLocationProviderClient: FusedLocationProviderClient) {
-        val locationRequest = LocationRequest.create().apply {
-            interval = 3000
-            fastestInterval = 3000
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
+
+        val locationRequest: LocationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            3000
+        ).build()
 
         val locationCallback: LocationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
+                Log.d(Tag, "Received a location update")
                 updateLocation(
                     locationResult.locations
                         .last()

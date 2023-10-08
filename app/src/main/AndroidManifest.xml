@@ -44,12 +44,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".MapActivity"
-            android:theme="@style/Theme.LocationAlarm">
-
-        </activity>
-
     </application>
 
 </manifest>

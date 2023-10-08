@@ -1,8 +1,10 @@
 package nz.ac.canterbury.seng440.mwa172.locationalarm
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -13,95 +15,129 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
-import androidx.compose.material.NavigationRail
-import androidx.compose.material.NavigationRailItem
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.launch
+import nz.ac.canterbury.seng440.mwa172.locationalarm.map.AlarmMap
+import nz.ac.canterbury.seng440.mwa172.locationalarm.map.MapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 
 class MainActivity : ComponentActivity() {
 
+    companion object {
+        private val tag: String = MainActivity::class.simpleName!!
+    }
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private val hasLocationPermissions
+        get() = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    private lateinit var viewModel: MapViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        viewModel = ViewModelProvider(this)[MapViewModel::class.java]
+
+        val permissions = arrayOf(
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        requestPermissions(permissions, 100)
+
+        // Coroutine for location updates
+        lifecycleScope.launch {
+            if (hasLocationPermissions) {
+                Log.d(tag, "Starting location updates...")
+                viewModel.startLocationUpdates(fusedLocationClient)
+            }
+        }
+
 
         setContent {
-
             LocationAlarmTheme {
+                MainNavigation()
+            }
+        }
+    }
 
-                val navController = rememberNavController()
+    @Composable
+    private fun MainNavigation() {
+        val navController = rememberNavController()
 
-                Scaffold(
-                    bottomBar = {
-                        BottomNavigation {
-                            var selectedItem by remember {
-                                mutableIntStateOf(1)
-                            }
-                            for (index in arrayOf(
-                                (0 to "alarms"),
-                                (1 to "map"),
-                                (2 to "settings")
-                            )) {
-                                BottomNavigationItem(
-                                    selected = selectedItem == index.first,
-                                    onClick = {
-                                        selectedItem = index.first
-                                        navController.navigate(index.second)
-                                    },
-                                    icon = {
-                                        Icon(
-                                            imageVector = Icons.Filled.Home,
-                                            contentDescription = ""
-                                        )
-                                    })
-                            }
-                        }
-                    }
-                ) { padding ->
-                    val context = this
-                    NavHost(navController = navController, startDestination = "map") {
+        Scaffold(
+            bottomBar = {
+                MainNavbar(navController)
+            }
+        ) { padding ->
+            MainNavHost(modifier = Modifier.padding(padding), navController = navController)
+        }
+    }
 
-                        composable("alarms") {
-                            Column(modifier = Modifier.padding(padding)) {
-                                Text("Alarms")
-                            }
-                        }
+    @Composable
+    private fun MainNavbar(navController: NavHostController) {
+        BottomNavigation {
+            var selectedItem by remember {
+                mutableStateOf(NavigationNodes.Map)
+            }
+            for (node in NavigationNodes.values()) {
+                BottomNavigationItem(
+                    selected = selectedItem == node,
+                    onClick = {
+                        selectedItem = node
+                        navController.navigate(node.url)
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = node.icon,
+                            contentDescription = ""
+                        )
+                    })
+            }
+        }
+    }
 
-                        composable("map") {
-                            Column(modifier = Modifier
-                                .padding(padding)
-                                .fillMaxSize(0.5f)) {
-                                Button(
-                                    onClick = {
-                                        val intent = Intent(context, MapActivity::class.java)
-                                        startActivity(intent)
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Home,
-                                        contentDescription = "Go to map"
-                                    )
-                                }
-                            }
-                        }
+    @Composable
+    private fun MainNavHost(modifier: Modifier, navController: NavHostController) {
+        val context: MainActivity = this
 
-                        composable("settings") {
-                            Column(modifier = Modifier.padding(padding)) {
-                                Text("settings")
-                            }
-                        }
-                    }
+        NavHost(navController = navController, startDestination = "map") {
+
+            composable(NavigationNodes.Alarms.url) {
+                Column(modifier = modifier) {
+                    Text("Alarms")
+                }
+            }
+
+            composable(NavigationNodes.Map.url) {
+                Box(modifier = modifier) {
+                    AlarmMap(viewModel = viewModel)
+                }
+            }
+
+            composable(NavigationNodes.Settings.url) {
+                Column(modifier = modifier) {
+                    Text("settings")
                 }
             }
         }
