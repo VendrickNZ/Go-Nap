@@ -12,18 +12,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.CreateAlarm
 
 @Composable
 @SuppressLint("MissingPermission")
 fun AlarmMap(
     modifier: Modifier = Modifier,
-    viewModel: MapViewModel
+    viewModel: MapViewModel,
+    navController: NavController
 ) {
 
     val cameraPositionState = rememberCameraPositionState {
@@ -45,7 +48,9 @@ fun AlarmMap(
         modifier = modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState,
         onMapClick = {
-
+            navController.navigate(
+                CreateAlarm.buildUrl(it.latitude, it.longitude)
+            )
         }
     ) {
         MarkerComposable(

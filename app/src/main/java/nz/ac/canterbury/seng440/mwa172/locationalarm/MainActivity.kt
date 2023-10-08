@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.AlarmMap
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.MapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
@@ -109,8 +109,6 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun MainNavHost(modifier: Modifier, navController: NavHostController) {
-        val context: MainActivity = this
-
         NavHost(navController = navController, startDestination = "map") {
 
             composable(NavigationNodes.Alarms.url) {
@@ -121,7 +119,10 @@ class MainActivity : ComponentActivity() {
 
             composable(NavigationNodes.Map.url) {
                 Box(modifier = modifier) {
-                    AlarmMap(viewModel = viewModel)
+                    AlarmMap(
+                        viewModel = viewModel,
+                        navController = navController
+                    )
                 }
             }
 
@@ -130,6 +131,9 @@ class MainActivity : ComponentActivity() {
                     Text("settings")
                 }
             }
+
+            createAlarmNode(this)
+
         }
     }
 }
