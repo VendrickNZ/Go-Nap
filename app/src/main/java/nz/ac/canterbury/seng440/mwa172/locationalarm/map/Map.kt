@@ -19,13 +19,15 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.CreateAlarm
+import nz.ac.canterbury.seng440.mwa172.locationalarm.asLatLng
 
 @Composable
 @SuppressLint("MissingPermission")
 fun AlarmMap(
     modifier: Modifier = Modifier,
-    viewModel: MapViewModel,
+    viewModel: GoNapViewModel,
     navController: NavController
 ) {
 

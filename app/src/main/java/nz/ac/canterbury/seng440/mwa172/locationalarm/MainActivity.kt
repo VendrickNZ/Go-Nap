@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -30,9 +31,8 @@ import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.AlarmMap
-import nz.ac.canterbury.seng440.mwa172.locationalarm.map.MapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
-
+import androidx.fragment.app.activityViewModels
 class MainActivity : ComponentActivity() {
 
     companion object {
@@ -45,13 +45,14 @@ class MainActivity : ComponentActivity() {
         get() = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
-    private lateinit var viewModel: MapViewModel
+    private val viewModel: GoNapViewModel by viewModels {
+        GoNapViewModelFactory((this.application as GoNapApplication).repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        viewModel = ViewModelProvider(this)[MapViewModel::class.java]
 
         val permissions = arrayOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,

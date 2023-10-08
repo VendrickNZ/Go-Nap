@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
 
 object CreateAlarm {
 
@@ -19,7 +20,10 @@ object CreateAlarm {
 
 }
 
-fun createAlarmNode(builder: NavGraphBuilder) {
+fun createAlarmNode(
+    builder: NavGraphBuilder,
+    viewModel: GoNapViewModel
+) {
 
     builder.composable(
         "alarm/create?lat={lat}&long={long}",
@@ -34,12 +38,16 @@ fun createAlarmNode(builder: NavGraphBuilder) {
     ) { backStackEntry ->
         val lat: Double = backStackEntry.arguments?.getFloat(CreateAlarm.Lat)?.toDouble() ?: 0.0
         val long: Double = backStackEntry.arguments?.getFloat(CreateAlarm.Long)?.toDouble() ?: 0.0
-        CreateAlarmScreen(lat, long)
+        CreateAlarmScreen(lat, long, viewModel)
     }
 
 }
 
 @Composable
-fun CreateAlarmScreen(lat: Double, long: Double) {
+fun CreateAlarmScreen(
+    lat: Double,
+    long: Double,
+    viewModel: GoNapViewModel
+) {
     Text(text = "Pressed $lat, $long")
 }

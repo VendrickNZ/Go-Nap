@@ -16,6 +16,7 @@ data class Alarm(
 
     @PrimaryKey(autoGenerate = true) var id: Long = 0
 
+    @get:Contract("->new")
     val location: LatLng
         get() = LatLng(latitude, longitude)
 
