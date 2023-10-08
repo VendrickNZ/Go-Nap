@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">Location Alarm</string>
-    <string name="title_activity_maps">MapsActivity</string>
+    <string name="app_name">Go Nap</string>
+    <string name="title_create_alarm">Create Alarm</string>
+
+    <string name="button_create">Create</string>
+    <string name="button_cancel">Cancel</string>
 </resources>

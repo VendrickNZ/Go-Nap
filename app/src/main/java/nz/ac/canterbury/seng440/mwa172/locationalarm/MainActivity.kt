@@ -20,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -32,7 +31,8 @@ import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.AlarmMap
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
-import androidx.fragment.app.activityViewModels
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
+
 class MainActivity : ComponentActivity() {
 
     companion object {
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         get() = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
-    private val viewModel: GoNapViewModel by viewModels {
+    private val updatedViewModel: GoNapViewModel by viewModels {
         GoNapViewModelFactory((this.application as GoNapApplication).repository)
     }
 
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             if (hasLocationPermissions) {
                 Log.d(tag, "Starting location updates...")
-                viewModel.startLocationUpdates(fusedLocationClient)
+                updatedViewModel.startLocationUpdates(fusedLocationClient)
             }
         }
 
@@ -113,15 +113,13 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = "map") {
 
             composable(NavigationNodes.Alarms.url) {
-                Column(modifier = modifier) {
-                    Text("Alarms")
-                }
+                AlarmList()
             }
 
             composable(NavigationNodes.Map.url) {
                 Box(modifier = modifier) {
                     AlarmMap(
-                        viewModel = viewModel,
+                        viewModel = updatedViewModel,
                         navController = navController
                     )
                 }
@@ -133,7 +131,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            createAlarmNode(this)
+            createAlarmNode(this, resources, navController)
 
         }
     }

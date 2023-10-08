@@ -45,6 +45,7 @@ class GoNapViewModel(
 
     fun addAlarm(alarm: Alarm) = viewModelScope.launch {
         alarmRepository.insert(alarm)
+        Log.d(Tag, "Inserted new alarm")
     }
 
     companion object {
