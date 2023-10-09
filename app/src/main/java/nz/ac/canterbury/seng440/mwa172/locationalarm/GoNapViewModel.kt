@@ -45,7 +45,11 @@ class GoNapViewModel(
 
     fun addAlarm(alarm: Alarm) = viewModelScope.launch {
         alarmRepository.insert(alarm)
-        Log.d(Tag, "Inserted new alarm")
+        Log.d(Tag, "Inserted new alarm: $alarm")
+    }
+
+    fun getLatestAlarm(): LiveData<Alarm?> {
+        return alarmRepository.getLatestAlarm().asLiveData()
     }
 
     companion object {
@@ -54,7 +58,6 @@ class GoNapViewModel(
     }
 
     fun updateLocation(location: Location) {
-
         _location.value?.let {
             if (it.distanceTo(location) <= MinDistanceForUpdate) {
                 Log.d(Tag, "User has not moved sufficiently to update crosshair")
@@ -78,6 +81,8 @@ class GoNapViewModel(
         val locationCallback: LocationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 Log.d(Tag, "Received a location update")
+                val lastLocation = locationResult.locations.last()
+                Log.d(Tag, "Latitude: ${lastLocation.latitude}, Longitude: ${lastLocation.longitude}")
                 updateLocation(
                     locationResult.locations
                         .last()

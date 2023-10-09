@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Go Nap</string>
-    <string name="title_create_alarm">Create Alarm</string>
-
+    <string name="title_create_alarm">Create Alarm Here?</string>
     <string name="button_create">Create</string>
     <string name="button_cancel">Cancel</string>
+    <string name="label_radius">Radius</string>
+    <string name="label_custom_value">Custom</string>
+    <string name="label_alarm_name">Alarm Name</string>
 </resources>

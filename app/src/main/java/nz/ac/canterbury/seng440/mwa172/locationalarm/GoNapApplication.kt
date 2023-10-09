@@ -12,5 +12,4 @@ class GoNapApplication: Application() {
     val repository by lazy {
         AlarmRepository(database.alarmDao())
     }
-
 }

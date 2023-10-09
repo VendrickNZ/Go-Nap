@@ -12,4 +12,9 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
         alarmDao.insert(alarm)
     }
 
+    fun getLatestAlarm(): Flow<Alarm?> {
+        return alarmDao.getLatestAlarm()
+    }
+
+
 }
