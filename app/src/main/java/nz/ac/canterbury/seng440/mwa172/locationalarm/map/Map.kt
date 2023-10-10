@@ -82,12 +82,12 @@ fun AlarmMap(
         .location
         .observeAsState(initial = null)
 
-    val position: LatLng = latLng ?: liveLocation.asLatLng()
+    val position: LatLng = liveLocation.asLatLng()
 
     LaunchedEffect(liveLocation) {
         Log.d("AlarmMap", "Recomposing with new location: $liveLocation")
         cameraPositionState.position = CameraPosition.fromLatLngZoom(
-            position, 17f
+            latLng ?: position, 17f
         )
     }
 
