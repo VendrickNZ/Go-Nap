@@ -32,6 +32,8 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.AlarmMap
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
+import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsScreen
+import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
 
 class MainActivity : ComponentActivity() {
@@ -47,7 +49,13 @@ class MainActivity : ComponentActivity() {
                 && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     private val updatedViewModel: GoNapViewModel by viewModels {
-        GoNapViewModelFactory((this.application as GoNapApplication).repository)
+        GoNapViewModelFactory(
+            (this.application as GoNapApplication).appRepository)
+    }
+
+    private val settingsViewModel: SettingsViewModel by viewModels {
+        GoNapViewModelFactory(
+            (this.application as GoNapApplication).appRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,13 +135,10 @@ class MainActivity : ComponentActivity() {
             )
 
             composable(NavigationNodes.Settings.url) {
-                Column(modifier = modifier) {
-                    Text("settings")
-                }
+                SettingsScreen(viewModel = settingsViewModel)
             }
 
             createAlarmNode(this, resources, navController)
-
         }
     }
 }

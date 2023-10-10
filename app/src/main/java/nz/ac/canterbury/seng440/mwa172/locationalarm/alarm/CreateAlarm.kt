@@ -28,6 +28,7 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -44,7 +44,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -101,11 +100,11 @@ fun CreateAlarmScreen(
     navController: NavController
 ) {
 
-    var currentRadius by remember { mutableStateOf(50.0) }
+    var currentRadius by remember { mutableDoubleStateOf(50.0) }
     var currentName by remember { mutableStateOf("My Alarm") }
 
     val viewModel: GoNapViewModel = viewModel(
-        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).repository)
+        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).appRepository)
     )
 
     val latestAlarm by viewModel.getLatestAlarm().observeAsState()
@@ -241,7 +240,7 @@ fun RadiusInput(
         Box {
             if (currentRadius != -1.0) {
                 Text(
-                    text = if (currentRadius == -1.0) stringResource(R.string.label_custom_value) + " metres" else "$currentRadius metres",
+                    text = "$currentRadius metres",
                     style = MaterialTheme.typography.h5,
                     modifier = Modifier.clickable { expanded.value = true }
                 )

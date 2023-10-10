@@ -1,15 +1,14 @@
-package nz.ac.canterbury.seng440.mwa172.locationalarm.alarm
+package nz.ac.canterbury.seng440.mwa172.locationalarm.settings
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsDao
-import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
-
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmDao
 
 @Database(entities = [Alarm::class, Settings::class], version = 2)
-abstract class AlarmDatabase: RoomDatabase() {
+abstract class SettingsDatabase: RoomDatabase() {
 
     abstract fun alarmDao(): AlarmDao
     abstract fun settingsDao(): SettingsDao
@@ -17,14 +16,14 @@ abstract class AlarmDatabase: RoomDatabase() {
     companion object {
 
         @Volatile
-        var Instance: AlarmDatabase? = null
+        var Instance: SettingsDatabase? = null
 
-        fun getDatabase(context: Context): AlarmDatabase {
+        fun getDatabase(context: Context): SettingsDatabase {
             return Instance ?: synchronized(this) {
-                val instance: AlarmDatabase = Room.databaseBuilder(
+                val instance: SettingsDatabase = Room.databaseBuilder(
                     context.applicationContext,
-                    AlarmDatabase::class.java,
-                    "alarm_database"
+                    SettingsDatabase::class.java,
+                    "settings_database"
                 )
                 .fallbackToDestructiveMigration() // have to provide a migration strategy
                 .build()
@@ -33,8 +32,5 @@ abstract class AlarmDatabase: RoomDatabase() {
                 return instance
             }
         }
-
-
     }
-
 }

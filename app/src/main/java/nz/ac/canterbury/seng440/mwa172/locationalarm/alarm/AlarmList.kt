@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -46,7 +47,7 @@ fun AlarmList(
 ) {
 
     val viewModel: GoNapViewModel = viewModel(
-        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).repository)
+        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).appRepository)
     )
 
     val alarms: List<Alarm> by viewModel.alarms.observeAsState(initial = listOf())
@@ -65,12 +66,18 @@ fun AlarmList(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colors.primaryVariant)
-                    .padding(16.dp)
+                    .padding(16.dp),
+
             ) {
-                Text(
-                    text = stringResource(R.string.title_alarm_list),
-                    style = MaterialTheme.typography.h5
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.title_alarm_list),
+                        style = MaterialTheme.typography.h5
+                        )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -171,7 +178,7 @@ fun AlarmItem(
 fun DeleteIcon(alarm: Alarm) {
 
     val viewModel: GoNapViewModel = viewModel(
-        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).repository)
+        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).appRepository)
     )
 
     Box(

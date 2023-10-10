@@ -17,43 +17,62 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
-import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmRepository
+import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.AppRepository
+import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
+import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsViewModel
 import org.jetbrains.annotations.Contract
 
 class GoNapViewModelFactory(
-    private val repository: AlarmRepository
+    private val appRepository: AppRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(GoNapViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return GoNapViewModel(repository) as T
+            return GoNapViewModel(appRepository) as T
+        } else if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return SettingsViewModel(appRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
 
+
 class GoNapViewModel(
-    private val alarmRepository: AlarmRepository
+    private val appRepository: AppRepository
 ) : ViewModel() {
 
     private var _location: MutableLiveData<Location> = MutableLiveData()
 
+    val settingsFlow = appRepository.settings.asLiveData()
+    val alarms: LiveData<List<Alarm>> = appRepository.alarms.asLiveData()
+
     val location: LiveData<Location>
         get() = _location
 
-    val alarms: LiveData<List<Alarm>> = alarmRepository.alarms.asLiveData()
 
     fun addAlarm(alarm: Alarm) = viewModelScope.launch {
-        alarmRepository.insert(alarm)
+        appRepository.insertAlarm(alarm)
         Log.d(Tag, "Inserted new alarm: $alarm")
     }
 
     fun removeAlarm(alarm: Alarm) = viewModelScope.launch {
-        alarmRepository.delete(alarm)
+        appRepository.deleteAlarm(alarm)
     }
 
     fun getLatestAlarm(): LiveData<Alarm?> {
-        return alarmRepository.getLatestAlarm().asLiveData()
+        return appRepository.getLatestAlarm().asLiveData()
+    }
+
+     fun updateRadius(newRadius: Double) = viewModelScope.launch {
+        val currentSettings = settingsFlow.value ?: Settings(
+            defaultRadius = newRadius,
+            defaultName = "Default name",
+            defaultSound = "Default sound",
+            defaultVibration = true
+        )
+        val updatedSettings = currentSettings.copy(defaultRadius = newRadius)
+        appRepository.insertOrUpdateSettings(updatedSettings)
     }
 
     companion object {
