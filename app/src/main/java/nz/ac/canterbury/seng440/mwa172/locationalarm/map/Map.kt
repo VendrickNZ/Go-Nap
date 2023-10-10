@@ -120,22 +120,10 @@ fun Alarms(
 
     val alarms: List<Alarm> by viewModel.alarms.observeAsState(initial = listOf())
 
-    val distance = floatArrayOf(3f)
     Log.d("AlarmView", "Placing ${alarms.size} alarms")
 
     for (alarm in alarms) {
-        Location.distanceBetween(
-            userLocation?.latitude ?: 0.0,
-            userLocation?.longitude ?: 0.0,
-            alarm.latitude,
-            alarm.longitude,
-            distance
-        )
-
-        // this is bizarre
-        if (distance[0] <= 10_000f) {
-            AlarmView(alarm = alarm)
-        }
+        AlarmView(alarm = alarm)
     }
 }
 
