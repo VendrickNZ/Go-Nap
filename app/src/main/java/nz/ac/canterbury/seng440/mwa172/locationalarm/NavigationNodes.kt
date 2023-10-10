@@ -45,4 +45,9 @@ enum class NavigationNodes(
         }
     );
 
+    companion object {
+
+        fun buildMapURL(lat: Double, long: Double) = "map?lat=$lat,long=$long"
+    }
+
 }

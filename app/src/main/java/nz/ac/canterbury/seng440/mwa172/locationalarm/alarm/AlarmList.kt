@@ -33,13 +33,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapApplication
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModelFactory
+import nz.ac.canterbury.seng440.mwa172.locationalarm.NavigationNodes
 import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 
 @Composable
-fun AlarmList() {
+fun AlarmList(
+    navController: NavController
+) {
 
     val viewModel: GoNapViewModel = viewModel(
         factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).repository)
@@ -73,7 +77,11 @@ fun AlarmList() {
         }
 
         itemsIndexed(alarms) { index: Int, alarm: Alarm ->
-            AlarmRow(index = index, alarm = alarm)
+            AlarmRow(
+                index = index,
+                alarm = alarm,
+                navController = navController
+            )
         }
     }
 
@@ -83,7 +91,8 @@ fun AlarmList() {
 @Composable
 fun AlarmRow(
     index: Int,
-    alarm: Alarm
+    alarm: Alarm,
+    navController: NavController
 ) {
 
     val swipeableState: SwipeableState<Int> = rememberSwipeableState(0)
@@ -97,7 +106,8 @@ fun AlarmRow(
             AlarmItem(
                 alarm,
                 index,
-                swipeableState
+                swipeableState,
+                navController
             )
         }
 
@@ -108,6 +118,7 @@ fun AlarmRow(
                 else
                     0f
             }
+
             else -> swipeableState.progress.from.toFloat()
         }
 
@@ -123,7 +134,12 @@ fun AlarmRow(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AlarmItem(alarm: Alarm, index: Int, swipeableState: SwipeableState<Int>) {
+fun AlarmItem(
+    alarm: Alarm,
+    index: Int,
+    swipeableState: SwipeableState<Int>,
+    navController: NavController
+) {
 
     val color =
         if (index % 2 == 0) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
@@ -143,6 +159,9 @@ fun AlarmItem(alarm: Alarm, index: Int, swipeableState: SwipeableState<Int>) {
                 anchors = anchors,
                 orientation = Orientation.Horizontal
             )
+            .clickable {
+                navController.navigate(NavigationNodes.buildMapURL(alarm.latitude, alarm.longitude))
+            }
     ) {
         Text(text = alarm.name)
     }

@@ -32,6 +32,7 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.AlarmMap
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
+import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
 
 class MainActivity : ComponentActivity() {
 
@@ -113,17 +114,17 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = "map") {
 
             composable(NavigationNodes.Alarms.url) {
-                AlarmList()
+                AlarmList(
+                    navController = navController
+                )
             }
 
-            composable(NavigationNodes.Map.url) {
-                Box(modifier = modifier) {
-                    AlarmMap(
-                        viewModel = updatedViewModel,
-                        navController = navController
-                    )
-                }
-            }
+            createMapNode(
+                modifier = modifier,
+                builder = this,
+                viewModel = updatedViewModel,
+                navController = navController
+            )
 
             composable(NavigationNodes.Settings.url) {
                 Column(modifier = modifier) {
