@@ -134,7 +134,7 @@ fun CreateAlarmScreen(
 
         AlarmNameInput(
             currentName = currentName,
-            onUpdateCurrentName = { newName -> currentName = if(newName.isEmpty()) "" else newName }
+            onUpdateCurrentName = { newName -> currentName = newName.ifEmpty { "" } }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -230,8 +230,10 @@ fun RadiusInput(
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = stringResource(R.string.label_radius),
-            style = MaterialTheme.typography.h5)
+        Text(
+            text = stringResource(R.string.label_radius),
+            style = MaterialTheme.typography.h5
+        )
 
         Box {
             if (currentRadius != -1.0) {
@@ -240,22 +242,30 @@ fun RadiusInput(
                     style = MaterialTheme.typography.h5,
                     modifier = Modifier.clickable { expanded.value = true }
                 )
-                DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
+                DropdownMenu(
+                    expanded = expanded.value,
+                    onDismissRequest = { expanded.value = false }) {
                     commonRadii.forEach { radii ->
                         DropdownMenuItem(onClick = {
                             onUpdateCurrentRadius(radii)
                             expanded.value = false
                         }) {
-                            Text(text = radii.toString(),
-                            style = MaterialTheme.typography.h6)
+                            Text(
+                                text = radii.toString(),
+                                style = MaterialTheme.typography.h6
+                            )
                         }
                     }
-                    DropdownMenuItem(onClick = {
-                        onUpdateCurrentRadius(-1.0)
-                        expanded.value = false
-                    }) {
-                        Text(text = "Custom",
-                            style = MaterialTheme.typography.h6)
+                    DropdownMenuItem(
+                        onClick = {
+                            onUpdateCurrentRadius(-1.0)
+                            expanded.value = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.label_custom_value),
+                            style = MaterialTheme.typography.h6
+                        )
                     }
                 }
             }

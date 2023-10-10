@@ -48,6 +48,10 @@ class GoNapViewModel(
         Log.d(Tag, "Inserted new alarm: $alarm")
     }
 
+    fun removeAlarm(alarm: Alarm) = viewModelScope.launch {
+        alarmRepository.delete(alarm)
+    }
+
     fun getLatestAlarm(): LiveData<Alarm?> {
         return alarmRepository.getLatestAlarm().asLiveData()
     }

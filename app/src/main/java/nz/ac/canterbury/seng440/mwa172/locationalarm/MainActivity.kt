@@ -118,10 +118,10 @@ class MainActivity : ComponentActivity() {
 
             composable(NavigationNodes.Map.url) {
                 Box(modifier = modifier) {
-                    AlarmMap(
-                        viewModel = updatedViewModel,
-                        navController = navController
-                    )
+//                    AlarmMap(
+//                        viewModel = updatedViewModel,
+//                        navController = navController
+//                    )
                 }
             }
 

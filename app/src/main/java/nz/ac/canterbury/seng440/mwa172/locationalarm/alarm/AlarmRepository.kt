@@ -12,6 +12,11 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
         alarmDao.insert(alarm)
     }
 
+    @WorkerThread
+    suspend fun delete(alarm: Alarm) {
+        alarmDao.delete(alarm)
+    }
+
     fun getLatestAlarm(): Flow<Alarm?> {
         return alarmDao.getLatestAlarm()
     }
