@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,14 +31,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapApplication
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModelFactory
 import nz.ac.canterbury.seng440.mwa172.locationalarm.R
-import kotlin.math.roundToInt
 
 @Composable
 fun AlarmList() {
@@ -77,7 +73,7 @@ fun AlarmList() {
         }
 
         itemsIndexed(alarms) { index: Int, alarm: Alarm ->
-            AlarmItem(index = index, alarm = alarm)
+            AlarmRow(index = index, alarm = alarm)
         }
     }
 
@@ -85,42 +81,24 @@ fun AlarmList() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AlarmItem(
+fun AlarmRow(
     index: Int,
     alarm: Alarm
 ) {
 
-    val squareSize = 100.dp
     val swipeableState: SwipeableState<Int> = rememberSwipeableState(0)
-    val sizePx = with(LocalDensity.current) { -squareSize.toPx() }
-    val anchors = mapOf(0f to 0, sizePx to 1)
-
-    val color =
-        if (index % 2 == 0) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
-
-    val viewModel: GoNapViewModel = viewModel(
-        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).repository)
-    )
 
     Row {
+
         Box(
             modifier = Modifier
                 .weight(3f - swipeableState.progress.fraction)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(color)
-                    .padding(16.dp)
-                    .swipeable(
-                        state = swipeableState,
-                        anchors = anchors,
-                        orientation = Orientation.Horizontal
-                    )
-            ) {
-                Text(text = alarm.name)
-            }
+            AlarmItem(
+                alarm,
+                index,
+                swipeableState
+            )
         }
 
         val trashWeight: Float = when (swipeableState.currentValue) {
@@ -137,23 +115,60 @@ fun AlarmItem(
             Box(
                 modifier = Modifier.weight(trashWeight)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colors.error)
-                        .padding(16.dp)
-                        .clickable {
-                            viewModel.removeAlarm(alarm)
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = "Delete"
-                    )
-                }
+                DeleteIcon(alarm)
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun AlarmItem(alarm: Alarm, index: Int, swipeableState: SwipeableState<Int>) {
+
+    val color =
+        if (index % 2 == 0) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
+
+    val squareSize = 100.dp
+    val sizePx = with(LocalDensity.current) { -squareSize.toPx() }
+    val anchors = mapOf(0f to 0, sizePx to 1)
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(color)
+            .padding(16.dp)
+            .swipeable(
+                state = swipeableState,
+                anchors = anchors,
+                orientation = Orientation.Horizontal
+            )
+    ) {
+        Text(text = alarm.name)
+    }
+}
+
+@Composable
+fun DeleteIcon(alarm: Alarm) {
+
+    val viewModel: GoNapViewModel = viewModel(
+        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).repository)
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colors.error)
+            .padding(16.dp)
+            .clickable {
+                viewModel.removeAlarm(alarm)
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Delete,
+            contentDescription = "Delete"
+        )
     }
 }
