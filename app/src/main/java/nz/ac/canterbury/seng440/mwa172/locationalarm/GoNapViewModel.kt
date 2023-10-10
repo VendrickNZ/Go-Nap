@@ -43,10 +43,9 @@ class GoNapViewModel(
 
     val alarms: LiveData<List<Alarm>> = alarmRepository.alarms.asLiveData()
 
-    fun addAlarm(alarm: Alarm, onCompleted: (Alarm) -> Unit) = viewModelScope.launch {
+    fun addAlarm(alarm: Alarm) = viewModelScope.launch {
         alarmRepository.insert(alarm)
         Log.d(Tag, "Inserted new alarm: $alarm")
-        onCompleted(alarm)
     }
 
     fun getLatestAlarm(): LiveData<Alarm?> {
