@@ -43,18 +43,24 @@ fun createMapNode(
     navController: NavController
 ) {
     builder.composable(
-        "map?pos={pos}",
+        "map?lat={lat},long={long}",
         arguments = listOf(
-            navArgument("pos") {
-                type = NavType.FloatArrayType
-                defaultValue = floatArrayOf()
+            navArgument("lat") {
+                type = NavType.FloatType
+                defaultValue = Float.NaN
+            },
+            navArgument("long") {
+                type = NavType.FloatType
+                defaultValue = Float.NaN
             }
         )
     ) { backStackEntry ->
-        val array = backStackEntry.arguments?.getFloatArray("pos") ?: floatArrayOf()
+        val lat: Float = backStackEntry.arguments?.getFloat("lat") ?: Float.NaN
+        val long: Float = backStackEntry.arguments?.getFloat("long") ?: Float.NaN
 
-        val pos = if (array.size == 2) LatLng(array[0].toDouble(), array[1].toDouble()) else null
+        val pos: LatLng? = if (!lat.isNaN() && !long.isNaN()) LatLng(lat.toDouble(), long.toDouble()) else null
 
+        Log.d("MapNode", "Navigating to $pos")
         AlarmMap(modifier, latLng = pos, viewModel = viewModel, navController = navController)
     }
 }
@@ -69,7 +75,7 @@ fun AlarmMap(
 ) {
 
     val cameraPositionState = rememberCameraPositionState {
-        CameraPosition(latLng ?: LatLng(0.0, 0.0), 20f, 0f, 0f)
+        CameraPosition(latLng ?: LatLng(0.0, 0.0), 17f, 0f, 0f)
     }
 
     val liveLocation: Location? by viewModel
@@ -81,7 +87,7 @@ fun AlarmMap(
     LaunchedEffect(liveLocation) {
         Log.d("AlarmMap", "Recomposing with new location: $liveLocation")
         cameraPositionState.position = CameraPosition.fromLatLngZoom(
-            position, 20f
+            position, 17f
         )
     }
 
