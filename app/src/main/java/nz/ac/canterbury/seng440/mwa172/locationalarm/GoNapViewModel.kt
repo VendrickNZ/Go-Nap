@@ -62,12 +62,12 @@ class GoNapViewModel(
     }
 
     fun updateLocation(location: Location) {
-        _location.value?.let {
-            if (it.distanceTo(location) <= MinDistanceForUpdate) {
-                Log.d(Tag, "User has not moved sufficiently to update crosshair")
-                return
-            }
-        }
+//        _location.value?.let {
+//            if (it.distanceTo(location) <= MinDistanceForUpdate) {
+//                Log.d(Tag, "User has not moved sufficiently to update crosshair")
+//                return
+//            }
+//        }
 
         Log.d(Tag, "Updating location in view model")
         _location.value = location

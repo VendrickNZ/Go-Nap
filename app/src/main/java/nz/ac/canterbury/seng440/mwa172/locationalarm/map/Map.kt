@@ -11,8 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.google.android.gms.maps.CameraUpdate
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -36,17 +39,15 @@ fun AlarmMap(
 
     val liveLocation: Location? by viewModel
         .location
-        .observeAsState(initial = null)  // Default to Christchurch, NZ
+        .observeAsState(initial = null)
 
     val position: LatLng = liveLocation.asLatLng()
 
     LaunchedEffect(liveLocation) {
         Log.d("AlarmMap", "Recomposing with new location: $liveLocation")
-        if (liveLocation == null) {
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(position, 20f)
-        } else {
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(position, cameraPositionState.position.zoom)
-        }
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(
+            position, if (cameraPositionState.position.zoom == 0f) 20f else cameraPositionState.position.zoom
+        )
     }
 
     GoogleMap(
