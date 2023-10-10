@@ -42,7 +42,11 @@ fun AlarmMap(
 
     LaunchedEffect(liveLocation) {
         Log.d("AlarmMap", "Recomposing with new location: $liveLocation")
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(position, 20f)
+        if (liveLocation == null) {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(position, 20f)
+        } else {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(position, cameraPositionState.position.zoom)
+        }
     }
 
     GoogleMap(
