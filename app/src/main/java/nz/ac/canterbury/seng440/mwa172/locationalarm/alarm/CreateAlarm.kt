@@ -194,7 +194,9 @@ fun AlarmNameInput(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+
     ) {
         Text(
             text = stringResource(R.string.label_alarm_name),
@@ -228,7 +230,8 @@ fun RadiusInput(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = stringResource(R.string.label_radius),
@@ -238,7 +241,7 @@ fun RadiusInput(
         Box {
             if (currentRadius != -1.0) {
                 Text(
-                    text = if (currentRadius == -1.0) stringResource(R.string.label_custom_value) else currentRadius.toString(),
+                    text = if (currentRadius == -1.0) stringResource(R.string.label_custom_value) + " metres" else "$currentRadius metres",
                     style = MaterialTheme.typography.h5,
                     modifier = Modifier.clickable { expanded.value = true }
                 )
