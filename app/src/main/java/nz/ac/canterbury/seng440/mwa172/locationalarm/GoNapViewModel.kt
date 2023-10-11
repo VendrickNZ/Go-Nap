@@ -64,7 +64,7 @@ class GoNapViewModel(
         return goNapRepository.getLatestAlarm().asLiveData()
     }
 
-     fun updateRadius(newRadius: Double) = viewModelScope.launch {
+    fun updateRadius(newRadius: Double) = viewModelScope.launch {
         val currentSettings = settingsFlow.value ?: Settings(
             defaultRadius = newRadius,
             defaultName = "Default name",
@@ -80,6 +80,8 @@ class GoNapViewModel(
         private const val Tag: String = "MapViewModel"
     }
 
+
+    @Synchronized
     fun updateLocation(location: Location) {
         _location.value?.let {
             if (it.distanceTo(location) <= MinDistanceForUpdate) {
@@ -90,7 +92,6 @@ class GoNapViewModel(
 
         Log.d(Tag, "Updating location in view model")
         _location.value = location
-
     }
 
     @SuppressLint("MissingPermission")

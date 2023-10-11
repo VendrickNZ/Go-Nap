@@ -151,6 +151,7 @@ fun AlarmView(
     Circle(
         center = alarmLocation,
         radius = alarm.radius,
-        fillColor = MaterialTheme.colors.secondary.copy(alpha = 0.15f)
+        fillColor = MaterialTheme.colors.secondary.copy(alpha = 0.15f),
+        strokeWidth = 5f
     )
 }
