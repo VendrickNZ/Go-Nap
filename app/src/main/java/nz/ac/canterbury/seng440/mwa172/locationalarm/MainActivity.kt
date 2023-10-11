@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
@@ -24,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
@@ -40,18 +42,16 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    private val hasLocationPermissions
-        get() = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
     private val updatedViewModel: GoNapViewModel by viewModels {
         GoNapViewModelFactory(
-            (this.application as GoNapApplication).goNapRepository)
+            (this.application as GoNapApplication).goNapRepository
+        )
     }
 
     private val settingsViewModel: SettingsViewModel by viewModels {
         GoNapViewModelFactory(
-            (this.application as GoNapApplication).goNapRepository)
+            (this.application as GoNapApplication).goNapRepository
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,26 +59,46 @@ class MainActivity : ComponentActivity() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        val permissions = arrayOf(
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-        requestPermissions(permissions, 100)
-
         // Coroutine for location updates
-        lifecycleScope.launch {
-            if (hasLocationPermissions) {
-                Log.d(tag, "Starting location updates...")
-                updatedViewModel.startLocationUpdates(fusedLocationClient)
-            }
-        }
-
+        requestLocationPermission()
 
         setContent {
             LocationAlarmTheme {
                 MainNavigation()
             }
         }
+    }
+
+    private fun requestLocationPermission() {
+        val result = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            val generalLocationPermissionGranted =
+                permissions.getOrDefault(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    false
+                ) || permissions.getOrDefault(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    false
+                )
+
+            if (generalLocationPermissionGranted) {
+                Log.d(tag, "Starting location updates...")
+                updatedViewModel.startLocationUpdates(fusedLocationClient)
+            }
+        }
+
+        result.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            )
+        )
+    }
+
+    private fun createGeoFences() {
+        
     }
 
     @Composable
