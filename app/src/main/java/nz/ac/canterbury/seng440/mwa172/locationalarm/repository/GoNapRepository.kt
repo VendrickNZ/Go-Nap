@@ -5,7 +5,7 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmRepository
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsRepository
 
-class AppRepository(
+class GoNapRepository(
     private val alarmRepository: AlarmRepository,
     private val settingsRepository: SettingsRepository
 ) {

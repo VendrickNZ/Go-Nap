@@ -4,15 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.AppRepository
+import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.GoNapRepository
 
 class SettingsViewModel(
-    private val appRepository: AppRepository
+    private val goNapRepository: GoNapRepository
 ) : ViewModel() {
 
-    val settingsFlow = appRepository.settings.asLiveData()
+    val settingsFlow = goNapRepository.settings.asLiveData()
 
     fun saveSettings(settings: Settings) = viewModelScope.launch {
-        appRepository.insertOrUpdateSettings(settings)
+        goNapRepository.insertOrUpdateSettings(settings)
     }
 }

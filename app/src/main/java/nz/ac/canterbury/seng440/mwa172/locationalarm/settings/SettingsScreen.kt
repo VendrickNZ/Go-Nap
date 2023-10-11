@@ -55,28 +55,25 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             DefaultNameSetting(
                 currentName = it.defaultName,
                 onUpdateDefaultName = { newName ->
-                    val newSettings = settings!!.copy(defaultName = newName)
+                    val newSettings = it.copy(defaultName = newName)
                     viewModel.saveSettings(newSettings)
                 }
             )
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        settings?.defaultRadius?.let {
             DefaultRadiusSetting(
-                currentRadius = it,
+                currentRadius = it.defaultRadius,
                 onUpdateDefaultRadius = { newRadius: Double ->
-                    val newSettings = settings?.copy(defaultRadius = newRadius)
-                    if (newSettings != null) {
-                        viewModel.saveSettings(newSettings)
-                    }
+                    val newSettings = it.copy(defaultRadius = newRadius)
+                    viewModel.saveSettings(newSettings)
                 },
                 commonRadii = listOf(100.0, 200.0, 500.0)
             )
         }
     }
 }
+
 
 @Composable
 fun DefaultNameSetting(

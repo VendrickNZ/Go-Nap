@@ -47,7 +47,7 @@ fun AlarmList(
 ) {
 
     val viewModel: GoNapViewModel = viewModel(
-        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).appRepository)
+        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).goNapRepository)
     )
 
     val alarms: List<Alarm> by viewModel.alarms.observeAsState(initial = listOf())
@@ -178,7 +178,7 @@ fun AlarmItem(
 fun DeleteIcon(alarm: Alarm) {
 
     val viewModel: GoNapViewModel = viewModel(
-        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).appRepository)
+        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).goNapRepository)
     )
 
     Box(

@@ -104,7 +104,7 @@ fun CreateAlarmScreen(
     var currentName by remember { mutableStateOf("My Alarm") }
 
     val viewModel: GoNapViewModel = viewModel(
-        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).appRepository)
+        factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).goNapRepository)
     )
 
     val latestAlarm by viewModel.getLatestAlarm().observeAsState()

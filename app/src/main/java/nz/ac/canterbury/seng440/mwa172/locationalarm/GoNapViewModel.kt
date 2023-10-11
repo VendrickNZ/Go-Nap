@@ -17,21 +17,21 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
-import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.AppRepository
+import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.GoNapRepository
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsViewModel
 import org.jetbrains.annotations.Contract
 
 class GoNapViewModelFactory(
-    private val appRepository: AppRepository
+    private val goNapRepository: GoNapRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(GoNapViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return GoNapViewModel(appRepository) as T
+            return GoNapViewModel(goNapRepository) as T
         } else if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return SettingsViewModel(appRepository) as T
+            return SettingsViewModel(goNapRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
@@ -39,29 +39,29 @@ class GoNapViewModelFactory(
 
 
 class GoNapViewModel(
-    private val appRepository: AppRepository
+    private val goNapRepository: GoNapRepository
 ) : ViewModel() {
 
     private var _location: MutableLiveData<Location> = MutableLiveData()
 
-    val settingsFlow = appRepository.settings.asLiveData()
-    val alarms: LiveData<List<Alarm>> = appRepository.alarms.asLiveData()
+    val settingsFlow = goNapRepository.settings.asLiveData()
+    val alarms: LiveData<List<Alarm>> = goNapRepository.alarms.asLiveData()
 
     val location: LiveData<Location>
         get() = _location
 
 
     fun addAlarm(alarm: Alarm) = viewModelScope.launch {
-        appRepository.insertAlarm(alarm)
+        goNapRepository.insertAlarm(alarm)
         Log.d(Tag, "Inserted new alarm: $alarm")
     }
 
     fun removeAlarm(alarm: Alarm) = viewModelScope.launch {
-        appRepository.deleteAlarm(alarm)
+        goNapRepository.deleteAlarm(alarm)
     }
 
     fun getLatestAlarm(): LiveData<Alarm?> {
-        return appRepository.getLatestAlarm().asLiveData()
+        return goNapRepository.getLatestAlarm().asLiveData()
     }
 
      fun updateRadius(newRadius: Double) = viewModelScope.launch {
@@ -72,7 +72,7 @@ class GoNapViewModel(
             defaultVibration = true
         )
         val updatedSettings = currentSettings.copy(defaultRadius = newRadius)
-        appRepository.insertOrUpdateSettings(updatedSettings)
+        goNapRepository.insertOrUpdateSettings(updatedSettings)
     }
 
     companion object {

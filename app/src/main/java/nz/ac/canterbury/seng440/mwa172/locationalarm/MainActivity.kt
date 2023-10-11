@@ -7,13 +7,10 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +26,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
-import nz.ac.canterbury.seng440.mwa172.locationalarm.map.AlarmMap
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsScreen
@@ -50,12 +46,12 @@ class MainActivity : ComponentActivity() {
 
     private val updatedViewModel: GoNapViewModel by viewModels {
         GoNapViewModelFactory(
-            (this.application as GoNapApplication).appRepository)
+            (this.application as GoNapApplication).goNapRepository)
     }
 
     private val settingsViewModel: SettingsViewModel by viewModels {
         GoNapViewModelFactory(
-            (this.application as GoNapApplication).appRepository)
+            (this.application as GoNapApplication).goNapRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
