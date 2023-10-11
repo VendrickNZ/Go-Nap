@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng440.mwa172.locationalarm
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -41,6 +44,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var geofencingClient: GeofencingClient
 
     private val updatedViewModel: GoNapViewModel by viewModels {
         GoNapViewModelFactory(
@@ -58,6 +62,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        geofencingClient = LocationServices.getGeofencingClient(this)
 
         // Coroutine for location updates
         requestLocationPermission()
@@ -69,6 +74,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
+    @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {
         val result = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
@@ -84,7 +91,12 @@ class MainActivity : ComponentActivity() {
 
             if (generalLocationPermissionGranted) {
                 Log.d(tag, "Starting location updates...")
-                updatedViewModel.startLocationUpdates(fusedLocationClient)
+
+                // launch coroutine for location updates
+
+                lifecycleScope.launch {
+                    updatedViewModel.startLocationUpdates(fusedLocationClient)
+                }
             }
         }
 
@@ -95,10 +107,6 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION
             )
         )
-    }
-
-    private fun createGeoFences() {
-        
     }
 
     @Composable

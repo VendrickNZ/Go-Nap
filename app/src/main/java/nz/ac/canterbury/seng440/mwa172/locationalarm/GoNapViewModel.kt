@@ -1,8 +1,8 @@
 package nz.ac.canterbury.seng440.mwa172.locationalarm
 
-import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
+import androidx.annotation.RequiresPermission
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,11 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.GoNapRepository
@@ -85,7 +83,7 @@ class GoNapViewModel(
     fun updateLocation(location: Location) {
         _location.value?.let {
             if (it.distanceTo(location) <= MinDistanceForUpdate) {
-                Log.d(Tag, "User has not moved sufficiently to update crosshair")
+                Log.d(Tag, "User has not moved sufficiently to update location")
                 return
             }
         }
@@ -94,27 +92,22 @@ class GoNapViewModel(
         _location.value = location
     }
 
-    @SuppressLint("MissingPermission")
-    fun startLocationUpdates(fusedLocationProviderClient: FusedLocationProviderClient) {
-
-        val locationRequest: LocationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY,
-            3000
-        ).build()
-
-        val locationCallback: LocationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                Log.d(Tag, "Received a location update")
-                val lastLocation = locationResult.locations.last()
-                Log.d(Tag, "Latitude: ${lastLocation.latitude}, Longitude: ${lastLocation.longitude}")
-                updateLocation(
-                    locationResult.locations
-                        .last()
-                )
-            }
+    @RequiresPermission(anyOf = [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+    ])
+    suspend fun startLocationUpdates(
+        fusedLocationProviderClient: FusedLocationProviderClient
+    ) {
+        while (true) {
+            Log.d(Tag,"Waiting for next update")
+            fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener {
+                    Log.d(Tag, "Latitude: ${it.latitude}, Longitude: ${it.longitude}")
+                    updateLocation(it)
+                }
+            delay(3000)
         }
-
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 }
 
