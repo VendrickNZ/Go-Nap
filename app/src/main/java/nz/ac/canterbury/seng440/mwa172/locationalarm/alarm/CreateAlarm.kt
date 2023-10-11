@@ -170,7 +170,7 @@ fun CreateAlarmScreen(
                     viewModel.addAlarm(newAlarm)
                     Log.d("RadiusDebug", "Current Radius: $currentRadius")
                     Log.d("VerifyAlarm", "Latest Alarm: $latestAlarm")
-                    navController.navigate(NavigationNodes.Map.url)
+                    navController.navigate(NavigationNodes.buildMapURL(lat, long))
                 },
                 modifier = Modifier.weight(1f)
             ) {
