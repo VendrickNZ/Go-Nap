@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng440.mwa172.locationalarm.settings
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope

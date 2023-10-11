@@ -113,7 +113,6 @@ fun AlarmMap(
     }
 }
 
-
 @Composable
 fun Alarms(
     viewModel: GoNapViewModel

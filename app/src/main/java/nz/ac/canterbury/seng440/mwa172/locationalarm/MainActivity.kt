@@ -131,7 +131,7 @@ class MainActivity : ComponentActivity() {
             )
 
             composable(NavigationNodes.Settings.url) {
-                SettingsScreen(viewModel = settingsViewModel)
+                SettingsScreen(viewModel = settingsViewModel, navController)
             }
 
             createAlarmNode(this, resources, navController)
