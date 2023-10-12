@@ -17,4 +17,7 @@ class GoNapApplication : Application() {
             SettingsRepository(goNapDatabase.settingsDao())
         )
     }
+    val state by lazy {
+        GoNapState()
+    }
 }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.PersonPin
@@ -15,8 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -30,6 +29,8 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapApplication
+import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapState
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.CreateAlarm
@@ -58,7 +59,8 @@ fun createMapNode(
         val lat: Float = backStackEntry.arguments?.getFloat("lat") ?: Float.NaN
         val long: Float = backStackEntry.arguments?.getFloat("long") ?: Float.NaN
 
-        val pos: LatLng? = if (!lat.isNaN() && !long.isNaN()) LatLng(lat.toDouble(), long.toDouble()) else null
+        val pos: LatLng? =
+            if (!lat.isNaN() && !long.isNaN()) LatLng(lat.toDouble(), long.toDouble()) else null
 
         Log.d("MapNode", "Navigating to $pos")
         AlarmMap(modifier, latLng = pos, viewModel = viewModel, navController = navController)
@@ -119,6 +121,7 @@ fun Alarms(
 ) {
     val userLocation: Location? by viewModel.location.observeAsState(initial = null)
 
+
     if (userLocation == null) {
         return
     }
@@ -137,6 +140,10 @@ fun AlarmView(
     alarm: Alarm
 ) {
     Log.d("AlarmView", "Placing alarm marker at ${alarm.latitude}, ${alarm.longitude}")
+
+    val state: GoNapState = (LocalContext.current.applicationContext as GoNapApplication).state
+
+
     val alarmLocation: LatLng = alarm.location
     MarkerComposable(
         state = MarkerState(position = alarmLocation)
@@ -147,11 +154,20 @@ fun AlarmView(
             contentDescription = ""
         )
     }
+    val errorColor = MaterialTheme.colors.error
+    val normalColor = MaterialTheme.colors.secondary
+
+    val color = if (alarm.id == state.activeAlarm?.id) errorColor else normalColor
 
     Circle(
         center = alarmLocation,
         radius = alarm.radius,
-        fillColor = MaterialTheme.colors.secondary.copy(alpha = 0.15f),
-        strokeWidth = 5f
+        fillColor = color.copy(alpha = 0.15f),
+        strokeWidth = 5f,
+        clickable = true,
+        onClick = {
+            state.activeAlarm = alarm
+            Log.d("", "Setting active alarm to $alarm")
+        }
     )
 }
