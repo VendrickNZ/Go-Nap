@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.GoNapRepository
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
-import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsViewModel
 import org.jetbrains.annotations.Contract
 
 class GoNapViewModelFactory(
@@ -27,9 +26,6 @@ class GoNapViewModelFactory(
         if (modelClass.isAssignableFrom(GoNapViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return GoNapViewModel(goNapRepository) as T
-        } else if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return SettingsViewModel(goNapRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
@@ -72,6 +68,11 @@ class GoNapViewModel(
         val updatedSettings = currentSettings.copy(defaultRadius = newRadius)
         goNapRepository.insertOrUpdateSettings(updatedSettings)
     }
+
+    fun saveSettings(settings: Settings) = viewModelScope.launch {
+        goNapRepository.insertOrUpdateSettings(settings)
+    }
+
 
     companion object {
         const val MinDistanceForUpdate: Float = 10f

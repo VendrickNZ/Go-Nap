@@ -34,7 +34,6 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsScreen
-import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
 
 class MainActivity : ComponentActivity() {
@@ -47,12 +46,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var geofencingClient: GeofencingClient
 
     private val updatedViewModel: GoNapViewModel by viewModels {
-        GoNapViewModelFactory(
-            (this.application as GoNapApplication).goNapRepository
-        )
-    }
-
-    private val settingsViewModel: SettingsViewModel by viewModels {
         GoNapViewModelFactory(
             (this.application as GoNapApplication).goNapRepository
         )
@@ -159,7 +152,7 @@ class MainActivity : ComponentActivity() {
             )
 
             composable(NavigationNodes.Settings.url) {
-                SettingsScreen(viewModel = settingsViewModel, navController)
+                SettingsScreen(viewModel = updatedViewModel, navController)
             }
 
             createAlarmNode(this, resources, navController)

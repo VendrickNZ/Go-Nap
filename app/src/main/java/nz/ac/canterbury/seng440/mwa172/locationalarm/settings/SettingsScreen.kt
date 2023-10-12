@@ -23,6 +23,7 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,14 +34,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel, navController: NavController) {
+fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
     val settings by viewModel.settingsFlow.observeAsState(initial = Settings())
 
     var tempName by remember { mutableStateOf(settings?.defaultName ?: "") }
-    var tempRadius by remember { mutableStateOf(settings?.defaultRadius ?: 0.0) }
+    var tempRadius by remember { mutableDoubleStateOf(settings?.defaultRadius ?: 0.0) }
 
     Column(
         modifier = Modifier
