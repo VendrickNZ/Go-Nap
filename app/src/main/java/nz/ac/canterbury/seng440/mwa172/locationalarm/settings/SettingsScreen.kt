@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -41,16 +42,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapApplication
+import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapState
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 
 @Composable
 fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
-    val settings by viewModel.settingsFlow.observeAsState(initial = Settings())
+    val state: GoNapState = (LocalContext.current.applicationContext as GoNapApplication).state
+    val settings: Settings = state.settings
     Log.d("SettingsScreen", "Settings: $settings")
 
-    var tempName by remember { mutableStateOf(settings?.defaultName ?: "") }
-    var tempRadius by remember { mutableDoubleStateOf(settings?.defaultRadius ?: 0.0) }
+    var tempName by remember { mutableStateOf(settings.defaultName) }
+    var tempRadius by remember { mutableDoubleStateOf(settings.defaultRadius) }
 
     Column(
         modifier = Modifier
@@ -74,57 +78,53 @@ fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
 
-        settings?.let {
-            DefaultNameSetting(
-                currentName = tempName,
-                onUpdateDefaultName = { tempName = it }
-            )
+        DefaultNameSetting(
+            currentName = tempName,
+            onUpdateDefaultName = { tempName = it }
+        )
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            DefaultRadiusSetting(
-                currentRadius = tempRadius,
-                onUpdateDefaultRadius = { tempRadius = it }
-            )
+        DefaultRadiusSetting(
+            currentRadius = tempRadius,
+            onUpdateDefaultRadius = { tempRadius = it }
+        )
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-            DefaultVibrationSetting(
-                isVibrationEnabled = it.defaultVibration,
-                onUpdateDefaultVibration = { newVibration ->
-                    val newSettings = it.copy(defaultVibration = newVibration)
-                    viewModel.saveSettings(newSettings)
-                }
-            )
-            Row {
-                OutlinedButton(
-                    onClick = {
-                        navController.navigateUp()
-                    },
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(
-                        text = stringResource(R.string.button_cancel),
-                        textDecoration = TextDecoration.Underline,
-                        style = MaterialTheme.typography.button
+        DefaultVibrationSetting(
+            isVibrationEnabled = settings.defaultVibration,
+            onUpdateDefaultVibration = { newVibration ->
+                state.settings = settings.copy(defaultVibration = newVibration)
+            }
+        )
+        Row {
+            OutlinedButton(
+                onClick = {
+                    navController.navigateUp()
+                },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(
+                    text = stringResource(R.string.button_cancel),
+                    textDecoration = TextDecoration.Underline,
+                    style = MaterialTheme.typography.button
+                )
+            }
+            Button(
+                onClick = {
+                    state.settings = settings.copy(
+                        defaultName = tempName,
+                        defaultRadius = tempRadius
                     )
-                }
-                Button(
-                    onClick = {
-                        val newSettings = settings!!.copy(
-                            defaultName = tempName,
-                            defaultRadius = tempRadius
-                        )
-                        viewModel.saveSettings(newSettings)
-                        navController.navigateUp()
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = stringResource(R.string.button_confirm),
-                        style = MaterialTheme.typography.button
-                    )
-                }
+                    navController.navigateUp()
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = stringResource(R.string.button_confirm),
+                    style = MaterialTheme.typography.button
+                )
             }
         }
     }
