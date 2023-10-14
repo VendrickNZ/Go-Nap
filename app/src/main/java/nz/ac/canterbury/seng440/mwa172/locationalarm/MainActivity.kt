@@ -194,9 +194,6 @@ class MainActivity : ComponentActivity() {
             }
 
             createAlarmNode(this, resources, navController)
-
-            createActiveAlarmNode(this, navController)
-
         }
     }
 }
