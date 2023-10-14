@@ -10,6 +10,8 @@
     </string>
     <string name="notification_title">Rise and Shine!</string>
     <string name="notification_description">You have arrived at your stop.</string>
+    <string name="notification_channel_name">Alarms</string>
+    <string name="notification_channel_desc">Alarms for when you arrive at your destination.</string>
     <string name="button_create">Create</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_confirm">Confirm</string>
