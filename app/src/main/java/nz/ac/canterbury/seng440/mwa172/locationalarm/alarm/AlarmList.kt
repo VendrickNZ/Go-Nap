@@ -194,7 +194,7 @@ fun DeleteIcon(alarm: Alarm) {
     ) {
         Icon(
             imageVector = Icons.Filled.Delete,
-            contentDescription = "Delete"
+            contentDescription = stringResource(R.string.label_delete)
         )
     }
 }

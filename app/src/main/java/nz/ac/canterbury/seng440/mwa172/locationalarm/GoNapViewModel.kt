@@ -43,12 +43,6 @@ class GoNapViewModel(
 
     val alarms: LiveData<List<Alarm>> = goNapRepository.alarms.asLiveData()
 
-    val currentName = mutableStateOf("My Alarm")
-    val currentRadius = mutableDoubleStateOf(50.0)
-
-    val tempName = MutableLiveData<String>()
-    val tempRadius = MutableLiveData<Double>()
-
     val location: LiveData<Location>
         get() = _location
 
