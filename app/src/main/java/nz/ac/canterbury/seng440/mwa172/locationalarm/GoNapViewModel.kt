@@ -40,7 +40,6 @@ class GoNapViewModel(
 
     private var _location: MutableLiveData<Location> = MutableLiveData()
 
-    val settingsFlow = goNapRepository.settings.asLiveData()
     val alarms: LiveData<List<Alarm>> = goNapRepository.alarms.asLiveData()
 
     val currentName = mutableStateOf("My Alarm")
@@ -51,12 +50,6 @@ class GoNapViewModel(
 
     val location: LiveData<Location>
         get() = _location
-
-    init {
-        viewModelScope.launch {
-            goNapRepository.initializeDefaultSettingsIfNecessary()
-        }
-    }
 
     fun addAlarm(alarm: Alarm) = viewModelScope.launch {
         goNapRepository.insertAlarm(alarm)
@@ -69,22 +62,6 @@ class GoNapViewModel(
 
     fun getLatestAlarm(): LiveData<Alarm?> {
         return goNapRepository.getLatestAlarm().asLiveData()
-    }
-
-    fun updateRadius(newRadius: Double) = viewModelScope.launch {
-        val currentSettings = settingsFlow.value ?: Settings(
-            defaultRadius = newRadius,
-            defaultName = "Default name",
-            defaultSound = "Default sound",
-            defaultVibration = true
-        )
-        val updatedSettings = currentSettings.copy(defaultRadius = newRadius)
-        goNapRepository.insertOrUpdateSettings(updatedSettings)
-    }
-
-    fun saveSettings(settings: Settings) = viewModelScope.launch {
-        Log.d("GNVM SETTINGS", settingsFlow.toString())
-        goNapRepository.insertOrUpdateSettings(settings)
     }
 
 

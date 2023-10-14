@@ -7,13 +7,11 @@ import androidx.room.RoomDatabase
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmDao
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
-import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsDao
 
-@Database(entities = [Alarm::class, Settings::class], version = 3)
+@Database(entities = [Alarm::class], version = 4)
 abstract class GoNapDatabase : RoomDatabase() {
 
     abstract fun alarmDao(): AlarmDao
-    abstract fun settingsDao(): SettingsDao
 
     companion object {
 

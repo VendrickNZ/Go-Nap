@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
@@ -40,6 +41,11 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsScreen
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
+import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
+import java.io.FileNotFoundException
+import java.io.FileWriter
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 
 class MainActivity : ComponentActivity() {
 
@@ -54,6 +60,41 @@ class MainActivity : ComponentActivity() {
         GoNapViewModelFactory(
             (this.application as GoNapApplication).goNapRepository
         )
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        try {
+            openFileInput("settings.json").use { fileInputStream ->
+                InputStreamReader(fileInputStream).use { reader ->
+                    val settings = Settings.Gson.fromJson(
+                        reader, Settings::class.java
+                    )
+                    val app = application as GoNapApplication
+                    app.state.settings = settings
+                }
+            }
+        } catch (_: FileNotFoundException) {
+            Log.d(tag, "Settings file not found, using default settings")
+        } catch (e: Exception) {
+            Log.d(tag, "Error reading settings, falling back to default settings: $e")
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        try {
+            openFileOutput("settings.json", Context.MODE_PRIVATE).use { stream ->
+                OutputStreamWriter(stream).use { writer ->
+                    val app = application as GoNapApplication
+                    Settings.Gson.toJson(app.state.settings, writer)
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(tag, "Error saving settings: $e")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
