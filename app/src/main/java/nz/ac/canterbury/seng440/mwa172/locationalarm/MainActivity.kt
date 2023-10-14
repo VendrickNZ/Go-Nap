@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -197,15 +199,21 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainNavigation() {
         val navController = rememberNavController()
+        val configuration = LocalConfiguration.current
+
+        val showBottomNavigation = configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
 
         Scaffold(
             bottomBar = {
-                MainNavbar(navController)
+                if (showBottomNavigation) {
+                    MainNavbar(navController)
+                }
             }
         ) { padding ->
             MainNavHost(modifier = Modifier.padding(padding), navController = navController)
         }
     }
+
 
     @Composable
     private fun MainNavbar(navController: NavHostController) {
@@ -228,8 +236,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun MainNavHost(modifier: Modifier, navController: NavHostController) {
-        NavHost(navController = navController, startDestination = "map") {
 
+        NavHost(navController = navController, startDestination = "map") {
             composable(NavigationNodes.Alarms.url) {
                 AlarmList(
                     navController = navController

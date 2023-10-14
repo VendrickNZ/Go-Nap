@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Haere Ngaro</string>
+    <string name="title_create_alarm">Waihangatia te Whakatūnga i Konei?</string>
+    <string name="title_alarm_list">Aku Whakatūnga</string>
+    <string name="title_confirm_active_alarm">Tīmatahia te hāere?</string>
+    <string name="desc_confirm_active_alarm">
+        Mā te tīmata i tēnei haerenga, ka:\n
+            • Tīmata te aroturuki i tō wāhi, me\n
+            • Whakakapi i tō haerenga aktive onāianei, mena he mea e whai ana koe
+    </string>
+    <string name="notification_title">Ara ake!</string>
+    <string name="notification_description">Kua tae koe ki tō whakatūnga.</string>
+    <string name="button_create">Waihanga</string>
+    <string name="button_cancel">Whakakore</string>
+    <string name="button_confirm">Whakaū</string>
+    <string name="label_radius">Rohe</string>
+    <string name="label_custom_value">Ritenga</string>
+    <string name="label_alarm_name">Ingoa Whakatūnga</string>
+    <string name="title_settings">Tautuhinga</string>
+    <string name="label_default_name">Ingoa Taunoa</string>
+    <string name="label_default_radius">Rohe Taunoa</string>
+    <string name="label_default_sound">Oro Taunoa</string>
+    <string name="label_default_vibration">Whakararuraru Taunoa</string>
+</resources>

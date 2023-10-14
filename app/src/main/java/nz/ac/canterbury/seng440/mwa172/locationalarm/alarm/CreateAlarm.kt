@@ -31,6 +31,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -51,6 +52,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapApplication
+import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapState
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModelFactory
 import nz.ac.canterbury.seng440.mwa172.locationalarm.NavigationNodes
@@ -87,7 +89,7 @@ fun createAlarmNode(
     ) { backStackEntry ->
         val lat: Double = backStackEntry.arguments?.getFloat(CreateAlarm.Lat)?.toDouble() ?: 0.0
         val long: Double = backStackEntry.arguments?.getFloat(CreateAlarm.Long)?.toDouble() ?: 0.0
-        CreateAlarmScreen(lat, long, resources, navController)
+        CreateAlarmScreen(lat, long, resources, navController, (LocalContext.current.applicationContext as GoNapApplication).state)
     }
 
 }
@@ -97,15 +99,15 @@ fun CreateAlarmScreen(
     lat: Double,
     long: Double,
     resources: Resources,
-    navController: NavController
-) {
-
-    var currentRadius by remember { mutableDoubleStateOf(50.0) }
-    var currentName by remember { mutableStateOf("My Alarm") }
-
-    val viewModel: GoNapViewModel = viewModel(
+    navController: NavController,
+    state: GoNapState,
+    viewModel: GoNapViewModel = viewModel(
         factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).goNapRepository)
     )
+) {
+
+    var currentName by rememberSaveable { mutableStateOf(state.settings.defaultName) }
+    var currentRadius by rememberSaveable { mutableDoubleStateOf(state.settings.defaultRadius) }
 
     val latestAlarm by viewModel.getLatestAlarm().observeAsState()
 
@@ -120,7 +122,8 @@ fun CreateAlarmScreen(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colors.primary)
-                .padding(16.dp)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = resources.getString(R.string.title_create_alarm),
@@ -204,7 +207,7 @@ fun AlarmNameInput(
 
         TextField(
             value = currentName,
-            onValueChange = { onUpdateCurrentName(it) },
+            onValueChange = onUpdateCurrentName,
             modifier = Modifier
                 .width(140.dp)
                 .height(52.dp)
