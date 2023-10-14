@@ -144,7 +144,7 @@ fun CreateAlarmScreen(
         RadiusInput(
             currentRadius = currentRadius,
             onUpdateCurrentRadius = { newRadius -> currentRadius = newRadius },
-            commonRadii = listOf(100.0, 200.0, 500.0)
+            commonRadii = listOf(20.0, 100.0, 200.0, 500.0)
         )
 
         Row {
