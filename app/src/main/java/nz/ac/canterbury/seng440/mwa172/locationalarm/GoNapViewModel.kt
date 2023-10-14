@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm
 import android.location.Location
 import android.util.Log
 import androidx.annotation.RequiresPermission
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -40,6 +42,12 @@ class GoNapViewModel(
 
     val settingsFlow = goNapRepository.settings.asLiveData()
     val alarms: LiveData<List<Alarm>> = goNapRepository.alarms.asLiveData()
+
+    val currentName = mutableStateOf("My Alarm")
+    val currentRadius = mutableDoubleStateOf(50.0)
+
+    val tempName = MutableLiveData<String>()
+    val tempRadius = MutableLiveData<Double>()
 
     val location: LiveData<Location>
         get() = _location

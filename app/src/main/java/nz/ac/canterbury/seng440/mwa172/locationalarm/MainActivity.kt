@@ -3,8 +3,10 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,15 +16,18 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Geofence
@@ -105,15 +110,21 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainNavigation() {
         val navController = rememberNavController()
+        val configuration = LocalConfiguration.current
+
+        val showBottomNavigation = configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
 
         Scaffold(
             bottomBar = {
-                MainNavbar(navController)
+                if (showBottomNavigation) {
+                    MainNavbar(navController)
+                }
             }
         ) { padding ->
             MainNavHost(modifier = Modifier.padding(padding), navController = navController)
         }
     }
+
 
     @Composable
     private fun MainNavbar(navController: NavHostController) {
@@ -136,8 +147,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun MainNavHost(modifier: Modifier, navController: NavHostController) {
-        NavHost(navController = navController, startDestination = "map") {
 
+        NavHost(navController = navController, startDestination = "map") {
             composable(NavigationNodes.Alarms.url) {
                 AlarmList(
                     navController = navController

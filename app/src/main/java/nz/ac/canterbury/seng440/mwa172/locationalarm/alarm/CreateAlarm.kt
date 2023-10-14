@@ -97,15 +97,14 @@ fun CreateAlarmScreen(
     lat: Double,
     long: Double,
     resources: Resources,
-    navController: NavController
-) {
-
-    var currentRadius by remember { mutableDoubleStateOf(50.0) }
-    var currentName by remember { mutableStateOf("My Alarm") }
-
-    val viewModel: GoNapViewModel = viewModel(
+    navController: NavController,
+    viewModel: GoNapViewModel = viewModel(
         factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).goNapRepository)
     )
+) {
+
+    var currentName by viewModel.currentName
+    var currentRadius by viewModel.currentRadius
 
     val latestAlarm by viewModel.getLatestAlarm().observeAsState()
 
@@ -120,7 +119,8 @@ fun CreateAlarmScreen(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colors.primary)
-                .padding(16.dp)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = resources.getString(R.string.title_create_alarm),
@@ -204,7 +204,7 @@ fun AlarmNameInput(
 
         TextField(
             value = currentName,
-            onValueChange = { onUpdateCurrentName(it) },
+            onValueChange = onUpdateCurrentName,
             modifier = Modifier
                 .width(140.dp)
                 .height(52.dp)

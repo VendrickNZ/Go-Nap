@@ -47,7 +47,6 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 @Composable
 fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
     val settings by viewModel.settingsFlow.observeAsState(initial = Settings())
-    Log.d("SettingsScreen", "Settings: $settings")
 
     var tempName by remember { mutableStateOf(settings?.defaultName ?: "") }
     var tempRadius by remember { mutableDoubleStateOf(settings?.defaultRadius ?: 0.0) }
@@ -63,7 +62,8 @@ fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colors.primary)
-                .padding(16.dp)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = stringResource(R.string.title_settings),
