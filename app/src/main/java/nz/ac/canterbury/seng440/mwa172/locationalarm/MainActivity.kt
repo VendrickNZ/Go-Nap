@@ -29,7 +29,6 @@ import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
-import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createActiveAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings

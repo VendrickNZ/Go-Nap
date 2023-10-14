@@ -134,6 +134,7 @@ fun AlarmMap(
         selectedAlarmState.value != null -> {
             BasicAlert(
                 title = stringResource(id = R.string.title_confirm_active_alarm),
+                desc = stringResource(id = R.string.desc_confirm_active_alarm),
                 onDismissRequest = {
                     selectedAlarmState.value = null
                 },
