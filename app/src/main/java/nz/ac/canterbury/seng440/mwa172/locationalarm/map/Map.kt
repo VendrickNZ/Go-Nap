@@ -201,7 +201,7 @@ fun AlarmView(
 
     Circle(
         center = alarmLocation,
-        radius = alarm.radius,
+        radius = alarm.radius.coerceAtLeast(1.0),
         fillColor = color.copy(alpha = 0.15f),
         strokeWidth = 5f,
         clickable = true,

@@ -157,7 +157,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {
         val result = registerForActivityResult(
