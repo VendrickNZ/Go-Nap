@@ -76,9 +76,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } catch (_: FileNotFoundException) {
-            Log.d(tag, "Settings file not found, using default settings")
+            Log.e(tag, "Settings file not found, using default settings")
         } catch (e: Exception) {
-            Log.d(tag, "Error reading settings, falling back to default settings: $e")
+            Log.e(tag, "Error reading settings, falling back to default settings: $e")
         }
     }
 
@@ -93,7 +93,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } catch (e: Exception) {
-            Log.d(tag, "Error saving settings: $e")
+            Log.e(tag, "Error saving settings: $e")
         }
     }
 
@@ -130,7 +130,7 @@ class MainActivity : ComponentActivity() {
                     Log.d(tag, "Existing geofences cancelled")
                 }
                 addOnFailureListener {
-                    Log.d(tag, "Failed to cancel geofences")
+                    Log.e(tag, "Failed to cancel geofences")
                 }
             }
         }
@@ -148,7 +148,7 @@ class MainActivity : ComponentActivity() {
                 Log.d(tag, "Created geofence successfully")
             }
             addOnFailureListener {
-                Log.d(tag, "Failed to create geofence")
+                Log.e(tag, "Failed to create geofence")
             }
         }
     }
