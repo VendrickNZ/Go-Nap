@@ -2,7 +2,9 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -26,8 +28,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.launch
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
@@ -51,6 +55,11 @@ class MainActivity : ComponentActivity() {
         GoNapViewModelFactory(
             (this.application as GoNapApplication).goNapRepository
         )
+    }
+
+    private val geofencePendingIntent: PendingIntent by lazy {
+        val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
+        PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     override fun onStart() {
@@ -104,6 +113,31 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun setupGeoFencing() {
+        val app = (this.application as GoNapApplication)
+        app.state.addAlarmChangeListener {
+            if (it != null) {
+                createGeofenceRequest(it)
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun createGeofenceRequest(alarm: Alarm) {
+        val request = GeofencingRequest.Builder().apply {
+            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            addGeofence(alarm.createGeofence())
+        }.build()
+
+        geofencingClient.addGeofences(request, geofencePendingIntent).run {
+            addOnSuccessListener {
+                Log.d(tag, "Created geofence successfully")
+            }
+            addOnFailureListener {
+                Log.d(tag, "Failed to create geofence")
+            }
+        }
+    }
 
     @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {

@@ -44,6 +44,8 @@
             </intent-filter>
         </activity>
 
+        <receiver android:name=".GeofenceBroadcastReceiver"/>
+
     </application>
 
 </manifest>
