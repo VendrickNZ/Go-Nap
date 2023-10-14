@@ -28,6 +28,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -53,8 +54,9 @@ fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
     val settings: Settings = state.settings
     Log.d("SettingsScreen", "Settings: $settings")
 
-    var tempName by remember { mutableStateOf(settings.defaultName) }
-    var tempRadius by remember { mutableDoubleStateOf(settings.defaultRadius) }
+    var tempName by rememberSaveable { mutableStateOf(settings.defaultName) }
+    var tempRadius by rememberSaveable { mutableDoubleStateOf(settings.defaultRadius) }
+
 
     Column(
         modifier = Modifier
