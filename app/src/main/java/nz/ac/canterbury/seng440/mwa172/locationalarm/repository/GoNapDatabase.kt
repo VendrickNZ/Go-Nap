@@ -9,7 +9,7 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmDao
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsDao
 
-@Database(entities = [Alarm::class, Settings::class], version = 2)
+@Database(entities = [Alarm::class, Settings::class], version = 3)
 abstract class GoNapDatabase : RoomDatabase() {
 
     abstract fun alarmDao(): AlarmDao

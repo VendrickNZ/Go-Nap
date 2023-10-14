@@ -44,6 +44,11 @@ class GoNapViewModel(
     val location: LiveData<Location>
         get() = _location
 
+    init {
+        viewModelScope.launch {
+            goNapRepository.initializeDefaultSettingsIfNecessary()
+        }
+    }
 
     fun addAlarm(alarm: Alarm) = viewModelScope.launch {
         goNapRepository.insertAlarm(alarm)
@@ -70,6 +75,7 @@ class GoNapViewModel(
     }
 
     fun saveSettings(settings: Settings) = viewModelScope.launch {
+        Log.d("GNVM SETTINGS", settingsFlow.toString())
         goNapRepository.insertOrUpdateSettings(settings)
     }
 

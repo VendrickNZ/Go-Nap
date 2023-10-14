@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -28,9 +30,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -40,6 +47,7 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 @Composable
 fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
     val settings by viewModel.settingsFlow.observeAsState(initial = Settings())
+    Log.d("SettingsScreen", "Settings: $settings")
 
     var tempName by remember { mutableStateOf(settings?.defaultName ?: "") }
     var tempRadius by remember { mutableDoubleStateOf(settings?.defaultRadius ?: 0.0) }
@@ -150,11 +158,16 @@ fun DefaultNameSetting(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DefaultRadiusSetting(
     currentRadius: Double,
     onUpdateDefaultRadius: (Double) -> Unit
 ) {
+    var textValue by remember { mutableStateOf(currentRadius.toString()) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,19 +181,31 @@ fun DefaultRadiusSetting(
         )
 
         TextField(
-            value = currentRadius.toString(),
-            onValueChange = {
-                val newRadius = it.toDoubleOrNull()
-                if (newRadius != null) {
-                    onUpdateDefaultRadius(newRadius)
-                }
+            value = textValue,
+            onValueChange = { newValue ->
+                textValue = newValue
             },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    val newRadius = textValue.toDoubleOrNull()
+                    if (newRadius != null) {
+                        onUpdateDefaultRadius(newRadius)
+                    }
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }
+            ),
             modifier = Modifier
                 .width(140.dp)
                 .height(52.dp)
         )
     }
 }
+
 
 @Composable
 fun DefaultVibrationSetting(

@@ -9,11 +9,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SettingsDao {
-    @Query("SELECT * FROM settings")
-    fun getAll(): Flow<Settings?>
+    @Query("SELECT * FROM settings LIMIT 1")
+    fun getSettings(): Flow<Settings?>
+
+    @Query("SELECT * FROM settings LIMIT 1")
+    suspend fun getSettingsOnce(): Settings?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdate(settings: Settings) {
-        Log.d("NEW SETTINGS", settings.defaultName + " " + settings.defaultRadius)
-    }
+    suspend fun insertOrUpdate(settings: Settings)
 }

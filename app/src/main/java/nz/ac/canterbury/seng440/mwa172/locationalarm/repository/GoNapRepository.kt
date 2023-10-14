@@ -27,4 +27,8 @@ class GoNapRepository(
 
     fun getLatestAlarm() = alarmRepository.getLatestAlarm()
 
+    suspend fun initializeDefaultSettingsIfNecessary() {
+        settingsRepository.initializeDefaultSettingsIfNecessary()
+    }
+
 }
