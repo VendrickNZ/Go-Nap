@@ -6,7 +6,15 @@ import android.content.Intent
 import android.util.Log
 
 class GeofenceBroadcastReceiver: BroadcastReceiver() {
-    override fun onReceive(context: Context?, intent: Intent?) {
-        Log.d("GeoFenceReceiver", "Received geofence broadcast")
+
+    companion object {
+        private val tag: String = GeofenceBroadcastReceiver::class.simpleName!!
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
+        Log.d(tag, "Received geofence broadcast")
+        val app = (context.applicationContext as GoNapApplication)
+
+        app.state.activeAlarm = null
     }
 }
