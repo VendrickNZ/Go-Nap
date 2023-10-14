@@ -13,6 +13,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.GoNapRepository
@@ -52,7 +53,9 @@ class GoNapViewModel(
         goNapRepository.deleteAlarm(alarm)
     }
 
-    fun getAlarmById(id: Long) = goNapRepository.getAlarmById(id)
+    fun getAlarmById(id: Long): Flow<Alarm?> {
+        return goNapRepository.getAlarmById(id)
+    }
 
     fun getLatestAlarm(): LiveData<Alarm?> {
         return goNapRepository.getLatestAlarm().asLiveData()
@@ -88,9 +91,11 @@ class GoNapViewModel(
         while (true) {
             Log.d(Tag,"Waiting for next update")
             fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-                .addOnSuccessListener {
-                    Log.d(Tag, "Latitude: ${it.latitude}, Longitude: ${it.longitude}")
-                    updateLocation(it)
+                .addOnSuccessListener { it: Location? ->
+                    if (it != null) {
+                        Log.d(Tag, "Latitude: ${it.latitude}, Longitude: ${it.longitude}")
+                        updateLocation(it)
+                    }
                 }
             delay(3000)
         }

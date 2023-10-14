@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng440.mwa172.locationalarm.repository
 
+import kotlinx.coroutines.flow.Flow
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmRepository
 
@@ -17,7 +18,7 @@ class GoNapRepository(
         alarmRepository.delete(alarm)
     }
 
-    fun getAlarmById(id: Long) = alarmRepository.getAlarmById(id)
+    fun getAlarmById(id: Long): Flow<Alarm?> = alarmRepository.getAlarmById(id)
 
     fun getLatestAlarm() = alarmRepository.getLatestAlarm()
 

@@ -2,6 +2,7 @@
     <string name="app_name">Go Nap</string>
     <string name="title_create_alarm">Create Alarm Here?</string>
     <string name="title_alarm_list">My Alarms</string>
+    <string name="title_confirm_active_alarm">Start journey?</string>
     <string name="button_create">Create</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_confirm">Confirm</string>

@@ -7,7 +7,7 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
 
     val alarms: Flow<List<Alarm>> = alarmDao.getAll()
 
-    fun getAlarmById(id: Long): Alarm? {
+    fun getAlarmById(id: Long): Flow<Alarm?> {
         return alarmDao.getById(id)
     }
 

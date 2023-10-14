@@ -32,6 +32,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapApplication
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapState
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.ActiveAlarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.CreateAlarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.asLatLng
@@ -168,8 +169,8 @@ fun AlarmView(
         strokeWidth = 5f,
         clickable = true,
         onClick = {
-            state.activeAlarm = alarm
-            Log.d("", "Setting active alarm to $alarm")
+            Log.d("", "Selected $alarm")
+            navController.navigate(ActiveAlarm.buildUrl(alarm.id))
         }
     )
 }

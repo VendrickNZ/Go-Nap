@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -26,21 +25,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.ActiveAlarmScreen
-import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
-import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
-import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.ConfirmActiveAlarm
-import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsScreen
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createActiveAlarmNode
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
+import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsScreen
+import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 import java.io.FileNotFoundException
-import java.io.FileWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
@@ -200,11 +195,8 @@ class MainActivity : ComponentActivity() {
 
             createAlarmNode(this, resources, navController)
 
-            composable(ActiveAlarmScreen.url) {
-                ConfirmActiveAlarm(
-                    navController
-                )
-            }
+            createActiveAlarmNode(this, navController)
+
         }
     }
 }
