@@ -5,12 +5,14 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -153,6 +155,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {
         val result = registerForActivityResult(
@@ -185,7 +188,8 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-                Manifest.permission.POST_NOTIFICATIONS
+                Manifest.permission.POST_NOTIFICATIONS,
+                Manifest.permission.SCHEDULE_EXACT_ALARM
             )
         )
     }
