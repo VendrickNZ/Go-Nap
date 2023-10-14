@@ -4,6 +4,7 @@
     <string name="title_alarm_list">My Alarms</string>
     <string name="button_create">Create</string>
     <string name="button_cancel">Cancel</string>
+    <string name="button_confirm">Confirm</string>
     <string name="label_radius">Radius</string>
     <string name="label_custom_value">Custom</string>
     <string name="label_alarm_name">Alarm Name</string>

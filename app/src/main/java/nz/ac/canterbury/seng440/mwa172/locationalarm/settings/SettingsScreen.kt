@@ -111,7 +111,6 @@ fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
                 }
                 Button(
                     onClick = {
-                        Log.d("Testing", settings.toString() + " " + tempName + " " + tempRadius)
                         val newSettings = settings!!.copy(
                             defaultName = tempName,
                             defaultRadius = tempRadius
@@ -122,7 +121,7 @@ fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = stringResource(R.string.button_create),
+                        text = stringResource(R.string.button_confirm),
                         style = MaterialTheme.typography.button
                     )
                 }
@@ -147,6 +146,7 @@ fun DefaultNameSetting(
             text = stringResource(R.string.label_default_name),
             style = MaterialTheme.typography.h5,
         )
+        Spacer(modifier = Modifier.width(16.dp))
 
         TextField(
             value = currentName,
@@ -180,8 +180,10 @@ fun DefaultRadiusSetting(
             style = MaterialTheme.typography.h5,
         )
 
+        Spacer(modifier = Modifier.width(8.dp))
+
         TextField(
-            value = textValue,
+            value = "$textValue",
             onValueChange = { newValue ->
                 textValue = newValue
             },
