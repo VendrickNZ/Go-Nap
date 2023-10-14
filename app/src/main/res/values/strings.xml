@@ -2,6 +2,14 @@
     <string name="app_name">Go Nap</string>
     <string name="title_create_alarm">Create Alarm Here?</string>
     <string name="title_alarm_list">My Alarms</string>
+    <string name="title_confirm_active_alarm">Start journey?</string>
+    <string name="desc_confirm_active_alarm">
+        Starting this journey will:\n
+            • Start tracking your location, and\n
+            • Replace your current active journey, if you have one
+    </string>
+    <string name="notification_title">Rise and Shine!</string>
+    <string name="notification_description">You have arrived at your stop.</string>
     <string name="button_create">Create</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_confirm">Confirm</string>

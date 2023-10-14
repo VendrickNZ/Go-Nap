@@ -12,10 +12,14 @@ import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -32,9 +36,11 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapApplication
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapState
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
+import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.CreateAlarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.asLatLng
+import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.BasicAlert
 
 
 fun createMapNode(
@@ -76,6 +82,8 @@ fun AlarmMap(
     navController: NavController
 ) {
 
+    val app = LocalContext.current.applicationContext as GoNapApplication
+
     val cameraPositionState = rememberCameraPositionState {
         CameraPosition(latLng ?: LatLng(0.0, 0.0), 17f, 0f, 0f)
     }
@@ -85,6 +93,10 @@ fun AlarmMap(
         .observeAsState(initial = null)
 
     val position: LatLng = liveLocation.asLatLng()
+
+    val selectedAlarmState: MutableState<Alarm?> = remember {
+        mutableStateOf(null)
+    }
 
     LaunchedEffect(liveLocation) {
         Log.d("AlarmMap", "Recomposing with new location: $liveLocation")
@@ -111,13 +123,35 @@ fun AlarmMap(
             )
         }
 
-        Alarms(viewModel = viewModel)
+        Alarms(
+            app = app,
+            viewModel = viewModel,
+            selectedAlarmState = selectedAlarmState
+        )
+    }
+
+    when {
+        selectedAlarmState.value != null -> {
+            BasicAlert(
+                title = stringResource(id = R.string.title_confirm_active_alarm),
+                desc = stringResource(id = R.string.desc_confirm_active_alarm),
+                onDismissRequest = {
+                    selectedAlarmState.value = null
+                },
+                onConfirmation = {
+                    app.state.activeAlarm = selectedAlarmState.value
+                    selectedAlarmState.value = null
+                }
+            )
+        }
     }
 }
 
 @Composable
 fun Alarms(
-    viewModel: GoNapViewModel
+    app: GoNapApplication,
+    viewModel: GoNapViewModel,
+    selectedAlarmState: MutableState<Alarm?>
 ) {
     val userLocation: Location? by viewModel.location.observeAsState(initial = null)
 
@@ -131,17 +165,23 @@ fun Alarms(
     Log.d("AlarmView", "Placing ${alarms.size} alarms")
 
     for (alarm in alarms) {
-        AlarmView(alarm = alarm)
+        AlarmView(
+            app = app,
+            alarm = alarm,
+            selectedAlarmState = selectedAlarmState
+        )
     }
 }
 
 @Composable
 fun AlarmView(
-    alarm: Alarm
+    app: GoNapApplication,
+    alarm: Alarm,
+    selectedAlarmState: MutableState<Alarm?>
 ) {
     Log.d("AlarmView", "Placing alarm marker at ${alarm.latitude}, ${alarm.longitude}")
 
-    val state: GoNapState = (LocalContext.current.applicationContext as GoNapApplication).state
+    val state: GoNapState = app.state
 
 
     val alarmLocation: LatLng = alarm.location
@@ -166,8 +206,9 @@ fun AlarmView(
         strokeWidth = 5f,
         clickable = true,
         onClick = {
-            state.activeAlarm = alarm
-            Log.d("", "Setting active alarm to $alarm")
+            Log.d("", "Selected $alarm")
+            selectedAlarmState.value = alarm
         }
     )
 }
+

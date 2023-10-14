@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm.alarm
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.android.gms.location.Geofence
 import com.google.android.gms.maps.model.LatLng
 import org.jetbrains.annotations.Contract
 
@@ -19,5 +20,16 @@ data class Alarm(
     @get:Contract("->new")
     val location: LatLng
         get() = LatLng(latitude, longitude)
+
+
+    @Contract("->new")
+    fun createGeofence(): Geofence = Geofence.Builder()
+        .setRequestId(this.id.toString())
+        .setCircularRegion(
+            this.latitude, this.longitude, this.radius.toFloat()
+        )
+        .setExpirationDuration(Geofence.NEVER_EXPIRE)
+        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+        .build()
 
 }

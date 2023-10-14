@@ -2,9 +2,9 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Context
-import android.content.pm.PackageManager
-import android.content.res.Configuration
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowInsets
@@ -31,19 +31,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
-import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
-import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsScreen
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
+import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsScreen
+import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 import java.io.FileNotFoundException
-import java.io.FileWriter
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
@@ -62,6 +61,11 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    private val geofencePendingIntent: PendingIntent by lazy {
+        val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
+        PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+    }
+
     override fun onStart() {
         super.onStart()
 
@@ -76,9 +80,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } catch (_: FileNotFoundException) {
-            Log.d(tag, "Settings file not found, using default settings")
+            Log.e(tag, "Settings file not found, using default settings")
         } catch (e: Exception) {
-            Log.d(tag, "Error reading settings, falling back to default settings: $e")
+            Log.e(tag, "Error reading settings, falling back to default settings: $e")
         }
     }
 
@@ -93,7 +97,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } catch (e: Exception) {
-            Log.d(tag, "Error saving settings: $e")
+            Log.e(tag, "Error saving settings: $e")
         }
     }
 
@@ -113,6 +117,45 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun setupGeoFencing() {
+        val app = (this.application as GoNapApplication)
+        app.state.addAlarmChangeListener {
+            destroyGeofenceRequests()
+            if (it != null) {
+                createGeofenceRequest(it)
+            }
+        }
+    }
+
+    private fun destroyGeofenceRequests() {
+        geofencingClient.removeGeofences(geofencePendingIntent).run {
+            addOnSuccessListener {
+                addOnSuccessListener {
+                    Log.d(tag, "Existing geofences cancelled")
+                }
+                addOnFailureListener {
+                    Log.e(tag, "Failed to cancel geofences")
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun createGeofenceRequest(alarm: Alarm) {
+        val request = GeofencingRequest.Builder().apply {
+            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            addGeofence(alarm.createGeofence())
+        }.build()
+
+        geofencingClient.addGeofences(request, geofencePendingIntent).run {
+            addOnSuccessListener {
+                Log.d(tag, "Created geofence successfully")
+            }
+            addOnFailureListener {
+                Log.e(tag, "Failed to create geofence")
+            }
+        }
+    }
 
     @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {
@@ -133,6 +176,8 @@ class MainActivity : ComponentActivity() {
 
                 // launch coroutine for location updates
 
+                setupGeoFencing()
+
                 lifecycleScope.launch {
                     updatedViewModel.startLocationUpdates(fusedLocationClient)
                 }
@@ -143,7 +188,8 @@ class MainActivity : ComponentActivity() {
             arrayOf(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                Manifest.permission.POST_NOTIFICATIONS
             )
         )
     }

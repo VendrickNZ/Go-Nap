@@ -19,7 +19,7 @@ interface AlarmDao {
     fun getAll(): Flow<List<Alarm>>
 
     @Query("SELECT * FROM alarm WHERE alarm.id = :id")
-    fun getById(id: Long): Alarm
+    fun getById(id: Long): Flow<Alarm?>
 
     @Query("SELECT * FROM alarm ORDER BY id DESC LIMIT 1")
     fun getLatestAlarm(): Flow<Alarm?>

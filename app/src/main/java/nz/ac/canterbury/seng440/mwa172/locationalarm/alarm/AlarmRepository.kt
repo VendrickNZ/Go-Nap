@@ -7,6 +7,10 @@ class AlarmRepository(private val alarmDao: AlarmDao) {
 
     val alarms: Flow<List<Alarm>> = alarmDao.getAll()
 
+    fun getAlarmById(id: Long): Flow<Alarm?> {
+        return alarmDao.getById(id)
+    }
+
     @WorkerThread
     suspend fun insert(alarm: Alarm) {
         alarmDao.insert(alarm)
