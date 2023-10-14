@@ -31,6 +31,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -51,6 +52,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapApplication
+import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapState
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModelFactory
 import nz.ac.canterbury.seng440.mwa172.locationalarm.NavigationNodes
@@ -87,7 +89,7 @@ fun createAlarmNode(
     ) { backStackEntry ->
         val lat: Double = backStackEntry.arguments?.getFloat(CreateAlarm.Lat)?.toDouble() ?: 0.0
         val long: Double = backStackEntry.arguments?.getFloat(CreateAlarm.Long)?.toDouble() ?: 0.0
-        CreateAlarmScreen(lat, long, resources, navController)
+        CreateAlarmScreen(lat, long, resources, navController, (LocalContext.current.applicationContext as GoNapApplication).state)
     }
 
 }
@@ -98,13 +100,14 @@ fun CreateAlarmScreen(
     long: Double,
     resources: Resources,
     navController: NavController,
+    state: GoNapState,
     viewModel: GoNapViewModel = viewModel(
         factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).goNapRepository)
     )
 ) {
 
-    var currentName by viewModel.currentName
-    var currentRadius by viewModel.currentRadius
+    var currentName by rememberSaveable { mutableStateOf(state.settings.defaultName) }
+    var currentRadius by rememberSaveable { mutableDoubleStateOf(state.settings.defaultRadius) }
 
     val latestAlarm by viewModel.getLatestAlarm().observeAsState()
 
