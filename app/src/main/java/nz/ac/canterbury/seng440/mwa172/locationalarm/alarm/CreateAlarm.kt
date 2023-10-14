@@ -163,7 +163,6 @@ fun CreateAlarmScreen(
 
             Button(
                 onClick = {
-                    Log.d("RadiusDebug", "Current Radius: $currentRadius")
                     val newAlarm = Alarm(
                         name = currentName,
                         latitude = lat,
@@ -171,8 +170,6 @@ fun CreateAlarmScreen(
                         radius = currentRadius
                     )
                     viewModel.addAlarm(newAlarm)
-                    Log.d("RadiusDebug", "Current Radius: $currentRadius")
-                    Log.d("VerifyAlarm", "Latest Alarm: $latestAlarm")
                     navController.navigate(NavigationNodes.buildMapURL(lat, long))
                 },
                 modifier = Modifier.weight(1f)
@@ -243,7 +240,7 @@ fun RadiusInput(
         Box {
             if (currentRadius != -1.0) {
                 Text(
-                    text = "$currentRadius metres",
+                    text = "$currentRadius ${stringResource(R.string.label_metres)}",
                     style = MaterialTheme.typography.h5,
                     modifier = Modifier.clickable { expanded.value = true }
                 )
