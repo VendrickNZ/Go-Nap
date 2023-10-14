@@ -34,7 +34,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
@@ -145,6 +147,7 @@ class MainActivity : ComponentActivity() {
         val request = GeofencingRequest.Builder().apply {
             setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
             addGeofence(alarm.createGeofence())
+            add
         }.build()
 
         geofencingClient.addGeofences(request, geofencePendingIntent).run {
@@ -178,8 +181,11 @@ class MainActivity : ComponentActivity() {
 
                 setupGeoFencing()
 
+
                 lifecycleScope.launch {
-                    updatedViewModel.startLocationUpdates(fusedLocationClient)
+                    withContext(Dispatchers.Main) {
+                        updatedViewModel.startLocationUpdates(fusedLocationClient)
+                    }
                 }
             }
         }
