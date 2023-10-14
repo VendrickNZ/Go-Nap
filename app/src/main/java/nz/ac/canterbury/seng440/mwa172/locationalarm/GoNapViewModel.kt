@@ -52,6 +52,8 @@ class GoNapViewModel(
         goNapRepository.deleteAlarm(alarm)
     }
 
+    fun getAlarmById(id: Long) = goNapRepository.getAlarmById(id)
+
     fun getLatestAlarm(): LiveData<Alarm?> {
         return goNapRepository.getLatestAlarm().asLiveData()
     }

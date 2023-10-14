@@ -17,6 +17,8 @@ class GoNapRepository(
         alarmRepository.delete(alarm)
     }
 
+    fun getAlarmById(id: Long) = alarmRepository.getAlarmById(id)
+
     fun getLatestAlarm() = alarmRepository.getLatestAlarm()
 
 

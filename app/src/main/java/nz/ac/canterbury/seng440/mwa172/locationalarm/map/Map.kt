@@ -111,13 +111,14 @@ fun AlarmMap(
             )
         }
 
-        Alarms(viewModel = viewModel)
+        Alarms(viewModel = viewModel, navController = navController)
     }
 }
 
 @Composable
 fun Alarms(
-    viewModel: GoNapViewModel
+    viewModel: GoNapViewModel,
+    navController: NavController
 ) {
     val userLocation: Location? by viewModel.location.observeAsState(initial = null)
 
@@ -131,13 +132,14 @@ fun Alarms(
     Log.d("AlarmView", "Placing ${alarms.size} alarms")
 
     for (alarm in alarms) {
-        AlarmView(alarm = alarm)
+        AlarmView(alarm = alarm, navController = navController)
     }
 }
 
 @Composable
 fun AlarmView(
-    alarm: Alarm
+    alarm: Alarm,
+    navController: NavController
 ) {
     Log.d("AlarmView", "Placing alarm marker at ${alarm.latitude}, ${alarm.longitude}")
 

@@ -31,9 +31,11 @@ import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.ActiveAlarmScreen
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.ConfirmActiveAlarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsScreen
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
@@ -197,6 +199,12 @@ class MainActivity : ComponentActivity() {
             }
 
             createAlarmNode(this, resources, navController)
+
+            composable(ActiveAlarmScreen.url) {
+                ConfirmActiveAlarm(
+                    navController
+                )
+            }
         }
     }
 }
