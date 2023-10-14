@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
 
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
-        PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
 
     override fun onStart() {
@@ -116,8 +116,22 @@ class MainActivity : ComponentActivity() {
     private fun setupGeoFencing() {
         val app = (this.application as GoNapApplication)
         app.state.addAlarmChangeListener {
+            destroyGeofenceRequests()
             if (it != null) {
                 createGeofenceRequest(it)
+            }
+        }
+    }
+
+    private fun destroyGeofenceRequests() {
+        geofencingClient.removeGeofences(geofencePendingIntent).run {
+            addOnSuccessListener {
+                addOnSuccessListener {
+                    Log.d(tag, "Existing geofences cancelled")
+                }
+                addOnFailureListener {
+                    Log.d(tag, "Failed to cancel geofences")
+                }
             }
         }
     }
@@ -157,6 +171,8 @@ class MainActivity : ComponentActivity() {
                 Log.d(tag, "Starting location updates...")
 
                 // launch coroutine for location updates
+
+                setupGeoFencing()
 
                 lifecycleScope.launch {
                     updatedViewModel.startLocationUpdates(fusedLocationClient)
