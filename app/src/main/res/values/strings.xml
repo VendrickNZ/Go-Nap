@@ -5,8 +5,8 @@
     <string name="title_confirm_active_alarm">Start journey?</string>
     <string name="desc_confirm_active_alarm">
         Starting this journey will:\n
-            - Start tracking your location, and\n
-            - Replace your current active journey, if you have one
+            • Start tracking your location, and\n
+            • Replace your current active journey, if you have one
     </string>
     <string name="button_create">Create</string>
     <string name="button_cancel">Cancel</string>
