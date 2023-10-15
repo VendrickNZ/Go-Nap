@@ -96,11 +96,6 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        Log.d(tag, "Received intent: $intent")
-    }
-
     override fun onStart() {
         super.onStart()
         intent?.data?.let {
@@ -151,12 +146,9 @@ class MainActivity : ComponentActivity() {
         requestLocationPermission()
 
         setContent {
-            
-
             LocationAlarmTheme {
                 MainNavigation()
             }
-
 
             // Intent handling based on this:
             // https://stackoverflow.com/questions/76677468/how-to-navigate-from-notification-to-specific-screen-in-an-android-jetpack-compo

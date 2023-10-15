@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng440.mwa172.locationalarm.alarm
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.material.SwipeableState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
@@ -70,7 +72,7 @@ fun AlarmList(
                     .background(MaterialTheme.colors.primaryVariant)
                     .padding(16.dp),
 
-            ) {
+                ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
@@ -78,7 +80,7 @@ fun AlarmList(
                     Text(
                         text = stringResource(R.string.title_alarm_list),
                         style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-                        )
+                    )
                 }
             }
 
@@ -150,6 +152,8 @@ fun AlarmItem(
     navController: NavController
 ) {
 
+    val context = LocalContext.current
+
     val color =
         if (index % 2 == 0) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant
 
@@ -172,7 +176,25 @@ fun AlarmItem(
                 navController.navigate(NavigationNodes.buildMapURL(alarm.latitude, alarm.longitude))
             }
     ) {
-        Text(text = alarm.name)
+        Row {
+            Text(
+                text = alarm.name
+            )
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable {
+                        context.shareAlarm(alarm)
+                    },
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Share,
+                    contentDescription = null
+                )
+            }
+        }
     }
 }
 
