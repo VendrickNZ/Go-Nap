@@ -6,14 +6,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -161,9 +159,24 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {
-        val result = registerForActivityResult(
+
+        val alarm = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+
+        }
+
+        val notifications = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            alarm.launch(Manifest.permission.SCHEDULE_EXACT_ALARM)
+        }
+
+        val backgroundLocation = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            notifications.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+
+        registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
+            Log.d(tag, "Receive permissions: $permissions")
             val generalLocationPermissionGranted =
                 permissions.getOrDefault(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -172,7 +185,6 @@ class MainActivity : ComponentActivity() {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     false
                 )
-
             if (generalLocationPermissionGranted) {
                 Log.d(tag, "Starting location updates...")
 
@@ -187,15 +199,12 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-        }
 
-        result.launch(
+            backgroundLocation.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }.launch(
             arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-                Manifest.permission.POST_NOTIFICATIONS,
-                Manifest.permission.SCHEDULE_EXACT_ALARM
+                Manifest.permission.ACCESS_COARSE_LOCATION
             )
         )
     }
