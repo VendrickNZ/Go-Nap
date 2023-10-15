@@ -5,25 +5,45 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.integerResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -49,6 +69,7 @@ import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
+
 class MainActivity : ComponentActivity() {
 
     companion object {
@@ -57,6 +78,8 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var geofencingClient: GeofencingClient
+    private lateinit var sensorManager: SensorManager
+    private lateinit var sensorEventListener: SensorEventListener
 
     private val updatedViewModel: GoNapViewModel by viewModels {
         GoNapViewModelFactory(
@@ -80,6 +103,7 @@ class MainActivity : ComponentActivity() {
             updatedViewModel.handleDeeplink(it)
         }
         intent = null
+
 
         try {
             openFileInput("settings.json").use { fileInputStream ->
@@ -139,6 +163,32 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensorEventListener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent) {
+                val rotationMatrix = FloatArray(9)
+                SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
+
+                val orientationAngles = FloatArray(3)
+                SensorManager.getOrientation(rotationMatrix, orientationAngles)
+
+                val azimuth = Math.toDegrees(orientationAngles[0].toDouble()).toFloat()
+                updatedViewModel.updateAzimuth(azimuth)
+
+
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+                // Handle accuracy changes
+            }
+        }
+        val rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+        sensorManager.registerListener(sensorEventListener, rotationSensor, SensorManager.SENSOR_DELAY_GAME)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(sensorEventListener)
     }
 
     private fun setupGeoFencing() {
@@ -183,21 +233,15 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {
+        Log.d("DEBUGGING", "In request location permission")
 
-        val alarm = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-
+        val backgroundLocationResult = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            // Handle the result for background location permission
         }
 
-        val notifications = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-            alarm.launch(Manifest.permission.SCHEDULE_EXACT_ALARM)
-        }
-
-        val backgroundLocation = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-            notifications.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-
-
-        registerForActivityResult(
+        val result = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             Log.d(tag, "Receive permissions: $permissions")
@@ -209,13 +253,13 @@ class MainActivity : ComponentActivity() {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     false
                 )
+            Log.d("DEBUGGING", "permission granted: $generalLocationPermissionGranted")
+
             if (generalLocationPermissionGranted) {
                 Log.d(tag, "Starting location updates...")
 
                 // launch coroutine for location updates
-
                 setupGeoFencing()
-
 
                 lifecycleScope.launch {
                     withContext(Dispatchers.Main) {
@@ -224,14 +268,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            backgroundLocation.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        }.launch(
+            // Launch the request for background location permission
+            backgroundLocationResult.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
+
+        result.launch(
             arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         )
     }
+
 
     @Composable
     private fun MainNavigation() {

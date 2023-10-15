@@ -1,6 +1,11 @@
 package nz.ac.canterbury.seng440.mwa172.locationalarm.map
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -17,10 +22,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -81,6 +92,7 @@ fun AlarmMap(
     viewModel: GoNapViewModel,
     navController: NavController
 ) {
+    val azimuth by viewModel.azimuth
 
     val app = LocalContext.current.applicationContext as GoNapApplication
 
@@ -97,6 +109,7 @@ fun AlarmMap(
     val selectedAlarmState: MutableState<Alarm?> = remember {
         mutableStateOf(null)
     }
+    Log.d("DEBUGGING", position.toString())
 
     LaunchedEffect(liveLocation) {
         Log.d("AlarmMap", "Recomposing with new location: $liveLocation")
@@ -115,11 +128,16 @@ fun AlarmMap(
         }
     ) {
         MarkerComposable(
-            state = MarkerState(position = position)
+            state = MarkerState(position = position),
         ) {
+            Log.d("Testing", "MarkerComposable: Before UserIcon")
+            //UserIcon(azimuth)
+            Log.d("Testing", "MarkerComposable: After UserIcon")
+
             Image(
                 imageVector = Icons.Filled.PersonPin,
-                contentDescription = ""
+                contentDescription = null,
+                modifier = Modifier.size(48.dp)
             )
         }
 
@@ -183,7 +201,6 @@ fun AlarmView(
 
     val state: GoNapState = app.state
 
-
     val alarmLocation: LatLng = alarm.location
     MarkerComposable(
         state = MarkerState(position = alarmLocation)
@@ -212,3 +229,24 @@ fun AlarmView(
     )
 }
 
+@Composable
+fun UserIcon(azimuth: Float) {
+    Log.d("UserIcon", "Recomposing with azimuth: $azimuth")
+    RotatedUserIcon(azimuth = azimuth)
+}
+
+@Composable
+fun RotatedUserIcon(azimuth: Float) {
+    Log.d("RotatedUserIcon", "Recomposing with azimuth: $azimuth")
+    val rotation by rememberUpdatedState(azimuth)
+    Image(
+        painter = painterResource(id = R.drawable.icon_v_shape),
+        contentDescription = null,
+        modifier = Modifier
+            .size(64.dp)
+            .rotate(rotation)
+            .onGloballyPositioned { coordinates ->
+                Log.d("RotatedUserIcon", "Rotation: $rotation")
+            }
+    )
+}

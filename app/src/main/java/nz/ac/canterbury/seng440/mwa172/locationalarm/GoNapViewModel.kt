@@ -4,8 +4,8 @@ import android.location.Location
 import android.net.Uri
 import android.util.Log
 import androidx.annotation.RequiresPermission
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.GoNapRepository
-import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
 import org.jetbrains.annotations.Contract
 
 class GoNapViewModelFactory(
@@ -47,6 +46,10 @@ class GoNapViewModel(
     private var _location: MutableLiveData<Location> = MutableLiveData()
 
     val alarms: LiveData<List<Alarm>> = goNapRepository.alarms.asLiveData()
+
+    private val _azimuth = mutableFloatStateOf(0f)
+    val azimuth: State<Float> get() = _azimuth
+
 
     val location: LiveData<Location>
         get() = _location
@@ -76,6 +79,11 @@ class GoNapViewModel(
         return goNapRepository.getLatestAlarm().asLiveData()
     }
 
+    fun updateAzimuth(newAzimuth: Float) {
+        _azimuth.value = newAzimuth
+    }
+
+
 
     companion object {
         const val MinDistanceForUpdate: Float = 10f
@@ -85,6 +93,7 @@ class GoNapViewModel(
 
     @Synchronized
     fun updateLocation(location: Location) {
+        Log.d("DEBUGGING", "updateLocation")
         _location.value?.let {
             if (it.distanceTo(location) <= MinDistanceForUpdate) {
                 Log.d(Tag, "User has not moved sufficiently to update location")
@@ -130,3 +139,4 @@ fun Location?.asLatLng(): LatLng {
         LatLng(this.latitude, this.longitude)
     }
 }
+
