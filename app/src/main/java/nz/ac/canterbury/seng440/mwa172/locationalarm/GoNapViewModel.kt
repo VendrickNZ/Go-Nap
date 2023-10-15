@@ -47,8 +47,8 @@ class GoNapViewModel(
 
     val alarms: LiveData<List<Alarm>> = goNapRepository.alarms.asLiveData()
 
-    private val _azimuth = mutableFloatStateOf(0f)
-    val azimuth: State<Float> get() = _azimuth
+    private val _azimuth: MutableLiveData<Float> = MutableLiveData()
+    val azimuth: LiveData<Float> get() = _azimuth
 
 
     val location: LiveData<Location>

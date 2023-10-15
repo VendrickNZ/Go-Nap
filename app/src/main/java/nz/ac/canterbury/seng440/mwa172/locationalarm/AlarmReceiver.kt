@@ -26,14 +26,6 @@ class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
 
         // Create an explicit intent for an Activity in your app
-        val alarmIntent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(
-            context, 0,
-            alarmIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
 
         val channel = NotificationChannel(
             NotificationChannelId,
@@ -50,7 +42,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 .build()
         )
 
-        channel.vibrationPattern = longArrayOf(1000, 1000, 1000, 1000, 1000)
+        channel.vibrationPattern = longArrayOf(1000, 1000, 1000, 1000, 1000, 1000)
 
         val notificationManager = NotificationManagerCompat.from(context)
         notificationManager.createNotificationChannel(channel)
@@ -61,8 +53,6 @@ class AlarmReceiver : BroadcastReceiver() {
             .setContentTitle(context.resources.getString(R.string.notification_title))
             .setContentText(context.resources.getString(R.string.notification_description))
             .setAutoCancel(false)
-            .setFullScreenIntent(pendingIntent, true)
-            .setContentIntent(pendingIntent)
 
         // Show the notification
         if (ActivityCompat.checkSelfPermission(

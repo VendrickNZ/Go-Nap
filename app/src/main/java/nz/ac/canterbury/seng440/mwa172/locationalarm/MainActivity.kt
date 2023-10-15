@@ -5,8 +5,6 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -17,33 +15,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.integerResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -59,7 +43,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
-import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.CreateAlarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
@@ -79,7 +62,23 @@ class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var geofencingClient: GeofencingClient
     private lateinit var sensorManager: SensorManager
-    private lateinit var sensorEventListener: SensorEventListener
+    private val sensorEventListener: SensorEventListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent) {
+            val rotationMatrix = FloatArray(9)
+            SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
+
+            val orientationAngles = FloatArray(3)
+            SensorManager.getOrientation(rotationMatrix, orientationAngles)
+
+            val azimuth = Math.toDegrees(orientationAngles[0].toDouble()).toFloat()
+            Log.d(tag, "Updated azimuth $azimuth")
+            updatedViewModel.updateAzimuth(azimuth)
+        }
+
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+
+        }
+    }
 
     private val updatedViewModel: GoNapViewModel by viewModels {
         GoNapViewModelFactory(
@@ -89,7 +88,12 @@ class MainActivity : ComponentActivity() {
 
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
-        PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        PendingIntent.getBroadcast(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -151,6 +155,8 @@ class MainActivity : ComponentActivity() {
                 MainNavigation()
             }
 
+            // Intent handling based on this:
+            // https://stackoverflow.com/questions/76677468/how-to-navigate-from-notification-to-specific-screen-in-an-android-jetpack-compo
             DisposableEffect(Unit) {
                 val listener: (Intent) -> Unit = { intent ->
                     intent.data?.let {
@@ -163,27 +169,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        sensorEventListener = object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent) {
-                val rotationMatrix = FloatArray(9)
-                SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
 
-                val orientationAngles = FloatArray(3)
-                SensorManager.getOrientation(rotationMatrix, orientationAngles)
-
-                val azimuth = Math.toDegrees(orientationAngles[0].toDouble()).toFloat()
-                updatedViewModel.updateAzimuth(azimuth)
-
-
-            }
-
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                // Handle accuracy changes
-            }
-        }
         val rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
-        sensorManager.registerListener(sensorEventListener, rotationSensor, SensorManager.SENSOR_DELAY_GAME)
+        sensorManager.registerListener(
+            sensorEventListener,
+            rotationSensor,
+            SensorManager.SENSOR_DELAY_GAME
+        )
     }
 
     override fun onPause() {

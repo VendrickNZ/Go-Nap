@@ -21,7 +21,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         private val tag: String = GeofenceBroadcastReceiver::class.simpleName!!
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(tag, "Received geofence broadcast")
         val app = (context.applicationContext as GoNapApplication)
@@ -30,7 +29,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         setAlarm(context)
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun setAlarm(context: Context) {
         Log.d(tag, "Setting alarm")
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
