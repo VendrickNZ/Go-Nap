@@ -169,9 +169,7 @@ fun CreateAlarmScreen(
             Text(
                 text = resources.getString(R.string.title_create_alarm),
                 style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
-
             )
-
         }
 
         Spacer(modifier = Modifier.height(16.dp))

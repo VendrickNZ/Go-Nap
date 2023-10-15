@@ -4,9 +4,15 @@ import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Navigation
@@ -17,10 +23,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -136,6 +145,19 @@ fun AlarmMap(
         )
     }
 
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colors.primary)
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.tutorial)
+        )
+    }
+
     when {
         selectedAlarmState.value != null -> {
             BasicAlert(
@@ -166,7 +188,6 @@ fun Alarms(
 
     val alarms: List<Alarm> by viewModel.alarms.observeAsState(initial = listOf())
 
-    Log.d("AlarmView", "Placing ${alarms.size} alarms")
 
     for (alarm in alarms) {
         AlarmView(
@@ -183,7 +204,6 @@ fun AlarmView(
     alarm: Alarm,
     selectedAlarmState: MutableState<Alarm?>
 ) {
-    Log.d("AlarmView", "Placing alarm marker at ${alarm.latitude}, ${alarm.longitude}")
 
     val state: GoNapState = app.state
 

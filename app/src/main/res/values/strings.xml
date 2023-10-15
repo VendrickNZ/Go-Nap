@@ -8,6 +8,7 @@
             • Start tracking your location, and\n
             • Replace your current active journey, if you have one
     </string>
+    <string name="tutorial">Press and hold to create an alarm</string>
     <string name="share_text">Come sleep with me on GoNap 😴! %s</string>
     <string name="notification_title">Rise and Shine!</string>
     <string name="notification_description">You have arrived at your stop.</string>
