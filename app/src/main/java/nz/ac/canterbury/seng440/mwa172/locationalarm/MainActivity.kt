@@ -147,7 +147,6 @@ class MainActivity : ComponentActivity() {
         val request = GeofencingRequest.Builder().apply {
             setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
             addGeofence(alarm.createGeofence())
-            add
         }.build()
 
         geofencingClient.addGeofences(request, geofencePendingIntent).run {
