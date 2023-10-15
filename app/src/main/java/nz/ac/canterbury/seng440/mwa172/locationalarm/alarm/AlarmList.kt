@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -75,7 +76,7 @@ fun AlarmList(
                 ) {
                     Text(
                         text = stringResource(R.string.title_alarm_list),
-                        style = MaterialTheme.typography.h5
+                        style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
                         )
                 }
             }

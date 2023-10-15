@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Existing Colors -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,4 +8,18 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- New Colors -->
+    <color name="color_text">#081B10</color>
+    <color name="color_background">#EBF9F1</color>
+    <color name="color_primary">#76D59B</color>
+    <color name="color_secondary">#B9E9CC</color>
+    <color name="color_accent">#32A45E</color>
+
+    <!-- Dark Mode Colors -->
+    <color name="dark_color_text">#E4F7EC</color>
+    <color name="dark_color_background">#06140C</color>
+    <color name="dark_color_primary">#2A894E</color>
+    <color name="dark_color_secondary">#164629</color>
+    <color name="dark_color_accent">#5BCD87</color>
 </resources>

@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
@@ -109,8 +110,6 @@ fun CreateAlarmScreen(
     var currentName by rememberSaveable { mutableStateOf(state.settings.defaultName) }
     var currentRadius by rememberSaveable { mutableDoubleStateOf(state.settings.defaultRadius) }
 
-    val latestAlarm by viewModel.getLatestAlarm().observeAsState()
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -127,7 +126,8 @@ fun CreateAlarmScreen(
         ) {
             Text(
                 text = resources.getString(R.string.title_create_alarm),
-                style = MaterialTheme.typography.h5
+                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+
             )
 
         }

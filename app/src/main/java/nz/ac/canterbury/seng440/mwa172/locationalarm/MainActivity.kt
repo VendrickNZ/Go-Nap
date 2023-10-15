@@ -174,9 +174,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {
         Log.d("DEBUGGING", "In request location permission")
+
+        val backgroundLocationResult = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            // Handle the result for background location permission
+        }
+
         val result = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
@@ -195,9 +201,7 @@ class MainActivity : ComponentActivity() {
                 Log.d(tag, "Starting location updates...")
 
                 // launch coroutine for location updates
-
                 setupGeoFencing()
-
 
                 lifecycleScope.launch {
                     withContext(Dispatchers.Main) {
@@ -206,14 +210,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            backgroundLocation.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        }.launch(
+            // Launch the request for background location permission
+            backgroundLocationResult.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        }
+
+        result.launch(
             arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         )
     }
+
 
     @Composable
     private fun MainNavigation() {
