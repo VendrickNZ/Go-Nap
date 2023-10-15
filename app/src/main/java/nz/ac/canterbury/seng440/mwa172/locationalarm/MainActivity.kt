@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -12,9 +13,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -55,6 +53,7 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.theme.LocationAlarmTheme
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
+
 
 class MainActivity : ComponentActivity() {
 
@@ -117,6 +116,14 @@ class MainActivity : ComponentActivity() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         geofencingClient = LocationServices.getGeofencingClient(this)
 
+        val something =
+            if (true) checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED else false
+
+        Log.d("DEBUGGING", something.toString())
+
+
+
         // Coroutine for location updates
         requestLocationPermission()
 
@@ -169,21 +176,8 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("MissingPermission")
     private fun requestLocationPermission() {
-
-        val alarm = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-
-        }
-
-        val notifications = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-            alarm.launch(Manifest.permission.SCHEDULE_EXACT_ALARM)
-        }
-
-        val backgroundLocation = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-            notifications.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-
-
-        registerForActivityResult(
+        Log.d("DEBUGGING", "In request location permission")
+        val result = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             Log.d(tag, "Receive permissions: $permissions")
@@ -195,6 +189,8 @@ class MainActivity : ComponentActivity() {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     false
                 )
+            Log.d("DEBUGGING", "permission granted: $generalLocationPermissionGranted")
+
             if (generalLocationPermissionGranted) {
                 Log.d(tag, "Starting location updates...")
 

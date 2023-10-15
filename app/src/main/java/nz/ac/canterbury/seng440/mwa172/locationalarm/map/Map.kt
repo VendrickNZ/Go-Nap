@@ -97,6 +97,7 @@ fun AlarmMap(
     val selectedAlarmState: MutableState<Alarm?> = remember {
         mutableStateOf(null)
     }
+    Log.d("DEBUGGING", position.toString())
 
     LaunchedEffect(liveLocation) {
         Log.d("AlarmMap", "Recomposing with new location: $liveLocation")

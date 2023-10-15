@@ -72,6 +72,7 @@ class GoNapViewModel(
 
     @Synchronized
     fun updateLocation(location: Location) {
+        Log.d("DEBUGGING", "updateLocation")
         _location.value?.let {
             if (it.distanceTo(location) <= MinDistanceForUpdate) {
                 Log.d(Tag, "User has not moved sufficiently to update location")
@@ -90,6 +91,7 @@ class GoNapViewModel(
     suspend fun startLocationUpdates(
         fusedLocationProviderClient: FusedLocationProviderClient
     ) {
+        Log.d("DEBUGGING", "locationUpdates")
         while (true) {
             Log.d(Tag,"Waiting for next update")
             fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
