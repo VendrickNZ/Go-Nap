@@ -44,6 +44,7 @@ import kotlinx.coroutines.withContext
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
+import nz.ac.canterbury.seng440.mwa172.locationalarm.map.UserIcon
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.SettingsScreen
@@ -71,7 +72,6 @@ class MainActivity : ComponentActivity() {
             SensorManager.getOrientation(rotationMatrix, orientationAngles)
 
             val azimuth = Math.toDegrees(orientationAngles[0].toDouble()).toFloat()
-            Log.d(tag, "Updated azimuth $azimuth")
             updatedViewModel.updateAzimuth(azimuth)
         }
 
@@ -151,9 +151,12 @@ class MainActivity : ComponentActivity() {
         requestLocationPermission()
 
         setContent {
+            
+
             LocationAlarmTheme {
                 MainNavigation()
             }
+
 
             // Intent handling based on this:
             // https://stackoverflow.com/questions/76677468/how-to-navigate-from-notification-to-specific-screen-in-an-android-jetpack-compo
