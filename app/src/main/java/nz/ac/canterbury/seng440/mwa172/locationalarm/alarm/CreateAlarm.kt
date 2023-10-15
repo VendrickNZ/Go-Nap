@@ -68,6 +68,7 @@ object CreateAlarm {
 
     fun buildUrl(lat: Double, long: Double): String = "$BaseUrl?$Lat=$lat&$Long=$long"
 
+    fun buildUrl(lat: Double, long: Double, name: String, radius: Double): String = "${buildUrl(lat, long)}&name=$name&radius=$radius"
 }
 
 fun createAlarmNode(
@@ -77,27 +78,61 @@ fun createAlarmNode(
 ) {
 
     builder.composable(
-        "alarm/create?lat={lat}&long={long}",
+        "alarm/create?lat={lat}&long={long}&name={name}&radius={radius}",
         arguments = listOf(
             navArgument(CreateAlarm.Lat) {
                 type = NavType.FloatType
             },
             navArgument(CreateAlarm.Long) {
                 type = NavType.FloatType
+            },
+            navArgument("name") {
+                type = NavType.StringType
+                defaultValue = ""
+            },
+            navArgument("radius") {
+                type = NavType.FloatType
+                defaultValue = Float.NaN
             }
         )
     ) { backStackEntry ->
+
+        val state = (LocalContext.current.applicationContext as GoNapApplication).state
+        val settings = state.settings
+
         val lat: Double = backStackEntry.arguments?.getFloat(CreateAlarm.Lat)?.toDouble() ?: 0.0
         val long: Double = backStackEntry.arguments?.getFloat(CreateAlarm.Long)?.toDouble() ?: 0.0
-        CreateAlarmScreen(lat, long, resources, navController, (LocalContext.current.applicationContext as GoNapApplication).state)
+
+        var name: String = backStackEntry.arguments?.getString("name") ?: settings.defaultName
+        if (name.isEmpty()) {
+            name = settings.defaultName
+        }
+
+        var radius: Double = backStackEntry.arguments?.getFloat("radius")?.toDouble() ?: settings.defaultRadius
+        if (radius.isNaN()) {
+            radius = settings.defaultRadius
+        }
+
+        val alarm = Alarm(
+            name = name,
+            radius = radius,
+            latitude = lat,
+            longitude = long
+        )
+
+        CreateAlarmScreen(
+            alarm,
+            resources,
+            navController,
+            state
+        )
     }
 
 }
 
 @Composable
 fun CreateAlarmScreen(
-    lat: Double,
-    long: Double,
+    alarm: Alarm,
     resources: Resources,
     navController: NavController,
     state: GoNapState,
@@ -108,8 +143,6 @@ fun CreateAlarmScreen(
 
     var currentName by rememberSaveable { mutableStateOf(state.settings.defaultName) }
     var currentRadius by rememberSaveable { mutableDoubleStateOf(state.settings.defaultRadius) }
-
-    val latestAlarm by viewModel.getLatestAlarm().observeAsState()
 
     Column(
         modifier = Modifier
@@ -163,14 +196,8 @@ fun CreateAlarmScreen(
 
             Button(
                 onClick = {
-                    val newAlarm = Alarm(
-                        name = currentName,
-                        latitude = lat,
-                        longitude = long,
-                        radius = currentRadius
-                    )
-                    viewModel.addAlarm(newAlarm)
-                    navController.navigate(NavigationNodes.buildMapURL(lat, long))
+                    viewModel.addAlarm(alarm)
+                    navController.navigate(NavigationNodes.buildMapURL(alarm.latitude, alarm.longitude))
                 },
                 modifier = Modifier.weight(1f)
             ) {
