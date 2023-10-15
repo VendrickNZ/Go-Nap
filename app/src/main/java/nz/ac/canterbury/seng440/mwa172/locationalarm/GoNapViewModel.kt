@@ -3,8 +3,20 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm
 import android.location.Location
 import android.util.Log
 import androidx.annotation.RequiresPermission
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,6 +28,8 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.GoNapRepository
@@ -43,6 +57,10 @@ class GoNapViewModel(
 
     val alarms: LiveData<List<Alarm>> = goNapRepository.alarms.asLiveData()
 
+    private val _azimuth = mutableFloatStateOf(0f)
+    val azimuth: State<Float> get() = _azimuth
+
+
     val location: LiveData<Location>
         get() = _location
 
@@ -62,6 +80,11 @@ class GoNapViewModel(
     fun getLatestAlarm(): LiveData<Alarm?> {
         return goNapRepository.getLatestAlarm().asLiveData()
     }
+
+    fun updateAzimuth(newAzimuth: Float) {
+        _azimuth.value = newAzimuth
+    }
+
 
 
     companion object {
@@ -91,7 +114,6 @@ class GoNapViewModel(
     suspend fun startLocationUpdates(
         fusedLocationProviderClient: FusedLocationProviderClient
     ) {
-        Log.d("DEBUGGING", "locationUpdates")
         while (true) {
             Log.d(Tag,"Waiting for next update")
             fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
@@ -114,3 +136,4 @@ fun Location?.asLatLng(): LatLng {
         LatLng(this.latitude, this.longitude)
     }
 }
+

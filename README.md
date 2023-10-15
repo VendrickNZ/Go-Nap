@@ -25,7 +25,7 @@ Grade bearing requirements met:
 12. ~~Support both landscape and portrait orientations in all views~~
 13. ~~Use string resources for all static text on the user interface~~
 14. ~~Provide a sketch of your app’s functionality~~ Done
-15. **Create a user test for your app (Test with Priscilla and Henry)**
+15. ~~Create a user test for your app (Test with Priscilla and Henry)~~
 16. ~~Incorporate some other Android feature not mentioned above~~ Google Maps SDK
 17. ~~Incorporate some other Android feature not mentioned above~~ Geofencing
 18. ~~Provide at least four weekly reports~~ (3/4)
