@@ -21,7 +21,7 @@ Grade bearing requirements met:
 8. ~~Send the user notifications related to your app in some way.~~ Alarms
 9. ~~Integrate an action bar in at least one activity.~~ Done
 10. ~~Provide a preference screen.~~
-11. **Add a multi-resolution launcher icon**
+11. ~~Add a multi-resolution launcher icon~~
 12. ~~Support both landscape and portrait orientations in all views~~
 13. ~~Use string resources for all static text on the user interface~~
 14. ~~Provide a sketch of your app’s functionality~~ Done
