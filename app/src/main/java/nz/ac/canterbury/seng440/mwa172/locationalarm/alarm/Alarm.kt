@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng440.mwa172.locationalarm.alarm
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
+import androidx.core.net.toUri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,6 +11,7 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.maps.model.LatLng
 import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 import org.jetbrains.annotations.Contract
+import java.net.URI
 
 @Entity(tableName = "alarm")
 data class Alarm(
@@ -46,7 +48,13 @@ fun Context.shareAlarm(alarm: Alarm) {
         Intent.EXTRA_TEXT,
         getString(
             R.string.share_text,
-            CreateAlarm.buildUrl(alarm)
+            URI(
+                "https",
+                "www.gonap.nz",
+                "/alarm/create",
+                "lat=${alarm.latitude}&long=${alarm.longitude}&name=${alarm.name}&radius=${alarm.radius}",
+                null
+            ).toASCIIString()
         )
     )
     startActivity(intent)

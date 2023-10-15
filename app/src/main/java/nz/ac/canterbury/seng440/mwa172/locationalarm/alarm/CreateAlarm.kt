@@ -134,8 +134,7 @@ fun createAlarmNode(
         CreateAlarmScreen(
             alarm,
             resources,
-            navController,
-            state
+            navController
         )
     }
 }
@@ -145,14 +144,13 @@ fun CreateAlarmScreen(
     alarm: Alarm,
     resources: Resources,
     navController: NavController,
-    state: GoNapState,
     viewModel: GoNapViewModel = viewModel(
         factory = GoNapViewModelFactory((LocalContext.current.applicationContext as GoNapApplication).goNapRepository)
     )
 ) {
 
-    var currentName by rememberSaveable { mutableStateOf(state.settings.defaultName) }
-    var currentRadius by rememberSaveable { mutableDoubleStateOf(state.settings.defaultRadius) }
+    var currentName by rememberSaveable { mutableStateOf(alarm.name) }
+    var currentRadius by rememberSaveable { mutableDoubleStateOf(alarm.radius) }
 
     Column(
         modifier = Modifier
@@ -207,7 +205,13 @@ fun CreateAlarmScreen(
 
             Button(
                 onClick = {
-                    viewModel.addAlarm(alarm)
+
+                    val newAlarm = alarm.copy(
+                        name = currentName,
+                        radius = currentRadius
+                    )
+
+                    viewModel.addAlarm(newAlarm)
                     navController.navigate(NavigationNodes.buildMapURL(alarm.latitude, alarm.longitude))
                 },
                 modifier = Modifier.weight(1f)
