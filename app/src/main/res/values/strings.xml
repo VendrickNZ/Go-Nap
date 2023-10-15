@@ -25,4 +25,7 @@
     <string name="label_default_sound">Default Sound</string>
     <string name="label_default_vibration">Default Vibration</string>
     <string name="label_metres">metres</string>
+    <string name="content_desc_alarm">Alarm List</string>
+    <string name="content_desc_map">Map of Alarms</string>
+    <string name="content_desc_settings">Settings</string>
 </resources>

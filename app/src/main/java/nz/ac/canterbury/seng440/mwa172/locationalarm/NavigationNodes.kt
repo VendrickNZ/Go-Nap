@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 
 enum class NavigationNodes(
     val url: String,
@@ -22,7 +23,7 @@ enum class NavigationNodes(
         children = {
             Icon(
                 imageVector = Icons.Outlined.Alarm,
-                contentDescription = "Alarm"
+                contentDescription = stringResource(id = R.string.content_desc_alarm)
             )
         }
     ),
@@ -31,7 +32,7 @@ enum class NavigationNodes(
         children = {
             Icon(
                 imageVector = Icons.Outlined.Explore,
-                contentDescription = "Map"
+                contentDescription = stringResource(id = R.string.content_desc_map)
             )
         }
     ),
@@ -40,7 +41,7 @@ enum class NavigationNodes(
         children = {
             Icon(
                 imageVector = Icons.Outlined.Settings,
-                contentDescription = "Settings"
+                contentDescription = stringResource(id = R.string.content_desc_settings)
             )
         }
     );

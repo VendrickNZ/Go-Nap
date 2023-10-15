@@ -49,7 +49,11 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
 import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 
 @Composable
-fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
+fun SettingsScreen(
+    modifier: Modifier,
+    viewModel: GoNapViewModel,
+    navController: NavController
+) {
     val state: GoNapState = (LocalContext.current.applicationContext as GoNapApplication).state
     val settings: Settings = state.settings
     Log.d("SettingsScreen", "Settings: $settings")
@@ -59,7 +63,7 @@ fun SettingsScreen(viewModel: GoNapViewModel, navController: NavController) {
 
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
             .padding(16.dp)

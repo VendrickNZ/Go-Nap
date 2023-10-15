@@ -12,15 +12,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.lifecycleScope
@@ -212,24 +220,17 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainNavigation() {
         val navController = rememberNavController()
-        val configuration = LocalConfiguration.current
-
-        val showBottomNavigation = configuration.orientation != Configuration.ORIENTATION_LANDSCAPE
-
         Scaffold(
             bottomBar = {
-                if (showBottomNavigation) {
-                    MainNavbar(navController)
-                }
+                BottomNavbar(navController)
             }
         ) { padding ->
             MainNavHost(modifier = Modifier.padding(padding), navController = navController)
         }
     }
 
-
     @Composable
-    private fun MainNavbar(navController: NavHostController) {
+    private fun BottomNavbar(navController: NavHostController) {
         BottomNavigation {
             var selectedItem by remember {
                 mutableStateOf(NavigationNodes.Map)
@@ -265,7 +266,11 @@ class MainActivity : ComponentActivity() {
             )
 
             composable(NavigationNodes.Settings.url) {
-                SettingsScreen(viewModel = updatedViewModel, navController)
+                SettingsScreen(
+                    modifier = modifier,
+                    updatedViewModel,
+                    navController
+                )
             }
 
             createAlarmNode(this, resources, navController)
