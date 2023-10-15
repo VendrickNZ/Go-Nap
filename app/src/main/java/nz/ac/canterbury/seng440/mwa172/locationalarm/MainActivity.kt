@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.GeofencingClient
@@ -231,13 +233,18 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun BottomNavbar(navController: NavHostController) {
+
         BottomNavigation {
-            var selectedItem by remember {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            var selectedItem by rememberSaveable {
                 mutableStateOf(NavigationNodes.Map)
             }
+            Log.d(tag, "Current route: $currentRoute")
             for (node in NavigationNodes.values()) {
                 BottomNavigationItem(
-                    selected = selectedItem == node,
+                    selected = currentRoute?.contains(node.url) ?: false,
                     onClick = {
                         selectedItem = node
                         navController.navigate(node.url)
