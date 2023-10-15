@@ -5,33 +5,25 @@ import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -47,6 +39,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.AlarmList
+import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.CreateAlarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.createAlarmNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.map.createMapNode
 import nz.ac.canterbury.seng440.mwa172.locationalarm.settings.Settings
@@ -76,8 +69,17 @@ class MainActivity : ComponentActivity() {
         PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Log.d(tag, "Received intent: $intent")
+    }
+
     override fun onStart() {
         super.onStart()
+        intent?.data?.let {
+            updatedViewModel.handleDeeplink(it)
+        }
+        intent = null
 
         try {
             openFileInput("settings.json").use { fileInputStream ->
@@ -123,6 +125,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             LocationAlarmTheme {
                 MainNavigation()
+            }
+
+            DisposableEffect(Unit) {
+                val listener: (Intent) -> Unit = { intent ->
+                    intent.data?.let {
+                        updatedViewModel.handleDeeplink(it)
+                    }
+                }
+                addOnNewIntentListener(listener)
+                onDispose {
+                    removeOnNewIntentListener(listener)
+                }
             }
         }
     }
@@ -229,6 +243,16 @@ class MainActivity : ComponentActivity() {
         ) { padding ->
             MainNavHost(modifier = Modifier.padding(padding), navController = navController)
         }
+
+        val event by updatedViewModel.event.collectAsState()
+        LaunchedEffect(event) {
+            when (val currentEvent = event) {
+                is Event.NavigateWithDeeplink -> navController.navigate(currentEvent.deeplink)
+                Event.None -> Unit
+            }
+
+            updatedViewModel.consumeEvent()
+        }
     }
 
     @Composable
@@ -257,7 +281,6 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun MainNavHost(modifier: Modifier, navController: NavHostController) {
-
         NavHost(navController = navController, startDestination = "map") {
             composable(NavigationNodes.Alarms.url) {
                 AlarmList(

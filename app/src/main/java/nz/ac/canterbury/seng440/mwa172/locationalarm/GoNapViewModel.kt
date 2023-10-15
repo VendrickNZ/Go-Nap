@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng440.mwa172.locationalarm
 
 import android.location.Location
+import android.net.Uri
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -16,6 +17,8 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.seng440.mwa172.locationalarm.alarm.Alarm
 import nz.ac.canterbury.seng440.mwa172.locationalarm.repository.GoNapRepository
@@ -39,12 +42,22 @@ class GoNapViewModel(
     private val goNapRepository: GoNapRepository
 ) : ViewModel() {
 
+    val event = MutableStateFlow<Event>(Event.None)
+
     private var _location: MutableLiveData<Location> = MutableLiveData()
 
     val alarms: LiveData<List<Alarm>> = goNapRepository.alarms.asLiveData()
 
     val location: LiveData<Location>
         get() = _location
+
+    fun handleDeeplink(uri: Uri) {
+        event.update { Event.NavigateWithDeeplink(uri) }
+    }
+
+    fun consumeEvent() {
+        event.update { Event.None }
+    }
 
     fun addAlarm(alarm: Alarm) = viewModelScope.launch {
         goNapRepository.insertAlarm(alarm)
@@ -102,6 +115,11 @@ class GoNapViewModel(
             delay(3000)
         }
     }
+}
+
+sealed interface Event {
+    data class NavigateWithDeeplink(val deeplink: Uri) : Event
+    object None : Event
 }
 
 @Contract("->new")

@@ -27,7 +27,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +50,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapApplication
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapState
 import nz.ac.canterbury.seng440.mwa172.locationalarm.GoNapViewModel
@@ -60,7 +60,11 @@ import nz.ac.canterbury.seng440.mwa172.locationalarm.R
 
 object CreateAlarm {
 
-    const val BaseUrl: String = "alarm/create"
+    const val Uri: String = "https://www.gonap.nz"
+
+    private const val BaseUrl: String = "alarm/create"
+
+    const val Route: String = "$BaseUrl?lat={lat}&long={long}&name={name}&radius={radius}"
 
     const val Lat: String = "lat"
 
@@ -69,6 +73,8 @@ object CreateAlarm {
     fun buildUrl(lat: Double, long: Double): String = "$BaseUrl?$Lat=$lat&$Long=$long"
 
     fun buildUrl(lat: Double, long: Double, name: String, radius: Double): String = "${buildUrl(lat, long)}&name=$name&radius=$radius"
+
+    fun buildUrl(alarm: Alarm) = buildUrl(alarm.latitude, alarm.longitude, alarm.name, alarm.radius)
 }
 
 fun createAlarmNode(
@@ -78,7 +84,7 @@ fun createAlarmNode(
 ) {
 
     builder.composable(
-        "alarm/create?lat={lat}&long={long}&name={name}&radius={radius}",
+        CreateAlarm.Route,
         arguments = listOf(
             navArgument(CreateAlarm.Lat) {
                 type = NavType.FloatType
@@ -94,9 +100,13 @@ fun createAlarmNode(
                 type = NavType.FloatType
                 defaultValue = Float.NaN
             }
+        ),
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = "${CreateAlarm.Uri}/${CreateAlarm.Route}"
+            }
         )
     ) { backStackEntry ->
-
         val state = (LocalContext.current.applicationContext as GoNapApplication).state
         val settings = state.settings
 
@@ -127,7 +137,6 @@ fun createAlarmNode(
             state
         )
     }
-
 }
 
 @Composable
