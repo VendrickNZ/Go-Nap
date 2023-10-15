@@ -25,8 +25,18 @@ Grade bearing requirements met:
 12. ~~Support both landscape and portrait orientations in all views~~
 13. ~~Use string resources for all static text on the user interface~~
 14. ~~Provide a sketch of your app’s functionality~~ Done
-15. **Create a user test for your app (Test with Priscilla and Henry)**
+15. ~~Create a user test for your app (Test with Priscilla and Henry)~~
 16. ~~Incorporate some other Android feature not mentioned above~~ Google Maps SDK
 17. ~~Incorporate some other Android feature not mentioned above~~ Geofencing
 18. ~~Provide at least four weekly reports~~ (3/4)
 19. ~~Successfully demo of your app during the last week of class~~ :)
+
+## User test feedback
+
+Priscilla: Hard to figure out how to create alarms
+
+Vincent:
+* Hard to figure out how to create alarms
+* User Location Icon is small
+* images for alarm circles
+* different colour scheme
