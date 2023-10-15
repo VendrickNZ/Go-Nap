@@ -1,4 +1,13 @@
-# location-alarm
+# Go Nap
+Michael Alpenfels, Jakib Isherwood
+
+## Important notes for cloning
+
+This app depends on Google Maps API for map data. You will need to add your API key to the `MAPS_API_KEY`
+property of`local.properties`.
+
+## Grade Checklist
+
 
 Grade bearing requirements met: 
 1. ~~Interact with with the nearby physical world in some way.~~ We implemented Location/GPS tracking
