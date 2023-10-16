@@ -100,12 +100,6 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        DefaultVibrationSetting(
-            isVibrationEnabled = settings.defaultVibration,
-            onUpdateDefaultVibration = { newVibration ->
-                state.settings = settings.copy(defaultVibration = newVibration)
-            }
-        )
         Row {
             OutlinedButton(
                 onClick = {
