@@ -229,10 +229,22 @@ class MainActivity : ComponentActivity() {
     private fun requestLocationPermission() {
         Log.d("DEBUGGING", "In request location permission")
 
+        val alarmResult = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) {
+
+        }
+
+        val pushNotificationResult = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) {
+            alarmResult.launch(Manifest.permission.SCHEDULE_EXACT_ALARM)
+        }
+
         val backgroundLocationResult = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
-        ) { isGranted ->
-            // Handle the result for background location permission
+        ) {
+            pushNotificationResult.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
 
         val result = registerForActivityResult(
