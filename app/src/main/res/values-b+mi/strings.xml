@@ -1,26 +1,54 @@
 <resources>
-    <string name="app_name">Haere Ngaro</string>
-    <string name="title_create_alarm">Waihangatia te Whakatūnga i Konei?</string>
-    <string name="title_alarm_list">Aku Whakatūnga</string>
-    <string name="title_confirm_active_alarm">Tīmatahia te hāere?</string>
+    <!-- Application name -->
+    <string name="app_name">Haere Moe</string>
+
+    <!-- Titles -->
+    <string name="title_create_alarm">Waiho Tūwhera i Konei?</string>
+    <string name="title_alarm_list">Aku Tūwhera</string>
+    <string name="title_confirm_active_alarm">Tīmata hāere?</string>
+
+    <!-- Descriptions -->
     <string name="desc_confirm_active_alarm">
-        Mā te tīmata i tēnei haerenga, ka:\n
-            • Tīmata te aroturuki i tō wāhi, me\n
-            • Whakakapi i tō haerenga aktive onāianei, mena he mea e whai ana koe
+        Ka tīmata tēnei hāerenga ka:\n
+            • Tīmata whai i tō wāhi, me\n
+            • Whakakapi i tō hāerenga tino e whai ana, ki te whai koe i tētahi
     </string>
+
+    <!-- Tutorials -->
+    <string name="tutorial">Pēhi me te pupuri ki te waiho tūwhera</string>
+
+    <!-- Share text -->
+    <string name="share_text">Haere moe tahi me ahau i te Haere Moe 😴! %s</string>
+
+    <!-- Notifications -->
     <string name="notification_title">Ara ake!</string>
-    <string name="notification_description">Kua tae koe ki tō whakatūnga.</string>
-    <string name="button_create">Waihanga</string>
+    <string name="notification_description">Kua tae koe ki tō whāinga.</string>
+
+    <!-- Channel names and descriptions -->
+    <string name="notification_channel_name">Tūwhera</string>
+    <string name="notification_channel_desc">Nga tūwhera mō te wā e tae ana koe ki tō whāinga.</string>
+
+    <!-- Buttons -->
+    <string name="button_create">Waiho</string>
     <string name="button_cancel">Whakakore</string>
-    <string name="button_confirm">Whakaū</string>
-    <string name="label_delete">Mukua</string>
-    <string name="label_radius">Rohe</string>
-    <string name="label_custom_value">Ritenga</string>
-    <string name="label_alarm_name">Ingoa Whakatūnga</string>
+    <string name="button_confirm">Whakaae</string>
+
+    <!-- Labels -->
+    <string name="label_delete">Muku</string>
+    <string name="label_radius">Pōkai</string>
+    <string name="label_custom_value">Tikanga Whaiaro</string>
+    <string name="label_alarm_name">Ingoa Tūwhera</string>
+
+    <!-- Settings -->
     <string name="title_settings">Tautuhinga</string>
     <string name="label_default_name">Ingoa Taunoa</string>
-    <string name="label_default_radius">Rohe Taunoa</string>
-    <string name="label_default_sound">Oro Taunoa</string>
-    <string name="label_default_vibration">Whakararuraru Taunoa</string>
-    <string name="label_metres">Mita</string>
+    <string name="label_default_radius">Pōkai Taunoa</string>
+    <string name="label_default_sound">Rongo Taunoa</string>
+    <string name="label_default_vibration">Whakarewa Taunoa</string>
+    <string name="label_metres">mita</string>
+
+    <!-- Content Descriptions -->
+    <string name="content_desc_alarm">Rārangi Tūwhera</string>
+    <string name="content_desc_map">Mahere o Nga Tūwhera</string>
+    <string name="content_desc_settings">Tautuhinga</string>
 </resources>
