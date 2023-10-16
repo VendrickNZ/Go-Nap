@@ -26,7 +26,7 @@ create alarm screen, and will prepopulate the create alarm with the data from th
 
 Because we do not actually own the domain `www.gonap.nz`, deep linking will need to be manually connected
 by the user in their android settings. This can be done by going `Apps > Go Nap > Defaults | Set as default > Supported web addresses` 
-then enable `www.gonap.nz`. You could also make sure that `Open supported links` is enabled.
+then enable `www.gonap.nz`. You should also make sure that `Open supported links` is enabled.
 
 ## Grade Checklist
 
